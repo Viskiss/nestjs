@@ -1,7 +1,7 @@
 import { DataSource } from 'typeorm';
-import config from '../config/configuration';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
+import config from '../configs/env.config';
 
 dotenv.config();
 
@@ -40,7 +40,7 @@ const dataSource = new DataSource({
   synchronize: false,
   subscribers: [],
   migrationsTableName: 'typeorm_migrations',
-  entities: [path.normalize(`${__dirname}/entities/**/*.{ts,js}`)],
+  entities: [path.normalize(`${__dirname}src/**/*.entity.ts`)],
   migrations: [path.normalize(`${__dirname}/migrations/*.{ts,js}`)],
 });
 

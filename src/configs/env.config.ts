@@ -9,6 +9,7 @@ const mainConfig = {
   ...defaultConfig,
   ...localConfig,
 };
+
 const config = {
   postgresDb: {
     host: mainConfig.POSTGRES_DB_HOST,

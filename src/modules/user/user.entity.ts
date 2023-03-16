@@ -14,5 +14,3 @@ export class User {
   @Column({ type: 'varchar', select: false, nullable: false })
   password: string;
 }
-
-export default User;

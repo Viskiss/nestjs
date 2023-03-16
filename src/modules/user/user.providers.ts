@@ -1,6 +1,6 @@
 import { userRepository } from 'src/constants';
 import { DataSource } from 'typeorm';
-import { User } from 'src/db/entities/User';
+import { User } from './user.entity';
 
 export const userProviders = [
   {

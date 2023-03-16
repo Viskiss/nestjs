@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { DatabaseModule } from './db/database.module';
-import { UsersModule } from './modules/user/users.module';
+import { dataSource } from './configs/typeorm.config';
+import { AuthModule } from './modules/auth/auth.module';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
-  imports: [DatabaseModule, UsersModule],
+  imports: [TypeOrmModule.forRoot(dataSource), UserModule, AuthModule],
   controllers: [AppController],
   providers: [AppService],
 })
