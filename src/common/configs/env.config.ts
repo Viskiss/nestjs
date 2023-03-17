@@ -24,11 +24,12 @@ const config = {
     jwtSecret: mainConfig.TOKEN_SECRET,
   },
   server: {
-    avatarPlace: mainConfig.CURRENT_URL,
-    currentUrl: mainConfig.CURRENT_URL,
     port: mainConfig.SERVER_PORT,
-    front: mainConfig.CLIENT_APP_URL,
-    internalErrorMessage: mainConfig.SERVER_INTERNAL_ERROR_MESSAGE,
+  },
+  redis: {
+    host: mainConfig.REDIS_HOST,
+    port: mainConfig.REDIS_PORT,
+    ttl: mainConfig.REDIS_TTL,
   },
 };
 

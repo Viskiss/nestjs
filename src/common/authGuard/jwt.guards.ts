@@ -10,3 +10,13 @@ export class AccessGuard extends AuthGuard('jwt') {
     return user;
   }
 }
+
+@Injectable()
+export class RefreshGuard extends AuthGuard('jwt-refresh') {
+  handleRequest(_, user) {
+    if (!user) {
+      throw new UnauthorizedException('Invalid token!');
+    }
+    return user;
+  }
+}

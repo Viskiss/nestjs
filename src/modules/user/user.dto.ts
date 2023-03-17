@@ -1,5 +1,5 @@
 import { IsEmail, IsOptional, MaxLength, MinLength } from 'class-validator';
-import { IsPassword } from 'src/utils/validator/password';
+import { IsPassword } from 'src/common/validator/password';
 
 export class CreateUserDto {
   @IsPassword()

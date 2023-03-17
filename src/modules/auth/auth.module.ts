@@ -3,16 +3,18 @@ import { ConfigModule } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 
-import { JwtAccessStrategy } from 'src/utils/authGuard/jwt.strategies';
-import { BcryptModule } from 'src/modules/bcrypt/bcrypt.module';
+import { JwtAccessStrategy } from 'src/common/authGuard/jwt.strategies';
 
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UserModule } from '../user/user.module';
+import { BcryptModule } from 'src/services/bcrypt/bcrypt.module';
+import { RedisModule } from 'src/services/redis/redis.module';
 
 @Module({
   imports: [
     ConfigModule,
+    RedisModule,
     JwtModule.register({}),
     PassportModule,
     BcryptModule,

@@ -1,4 +1,5 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import Redis from 'ioredis';
 import * as path from 'path';
 import { DataSource } from 'typeorm';
 import config from './env.config';
@@ -18,7 +19,7 @@ export const dataSource: TypeOrmModuleOptions = {
   autoLoadEntities: true,
 };
 
-export default new DataSource({
+export const typeOrmSourse = new DataSource({
   type: 'postgres',
   host: config.postgresDb.host,
   port: config.postgresDb.port,
@@ -32,3 +33,5 @@ export default new DataSource({
   entities: [path.normalize(`${__dirname}/entities/**/*.{ts,js}`)],
   migrations: [path.normalize(`${__dirname}/migrations/*.{ts,js}`)],
 });
+
+new Redis(+config.redis.port, config.redis.host);

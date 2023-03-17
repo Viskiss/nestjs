@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './user.service';
-import { AccessGuard } from 'src/utils/authGuard/jwt.guards';
+import { AccessGuard } from 'src/common/authGuard/jwt.guards';
 import { UpdateUserDto, UpdateUserPasswordDto } from './user.dto';
 
 @Controller('users')

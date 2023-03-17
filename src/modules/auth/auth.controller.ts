@@ -4,11 +4,12 @@ import {
   Post,
   Body,
   BadRequestException,
-  HttpCode,
+  Req,
 } from '@nestjs/common';
 
 import { LoginUserDto } from './auth.dto';
 import { AuthService } from './auth.service';
+import { User } from '../user/user.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -24,10 +25,18 @@ export class AuthController {
   }
 
   @Post('/signup')
-  @HttpCode(201)
   async signUp(@Body() body: CreateUserDto) {
     try {
       return this.authService.signUp(body);
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  @Post('/refresh')
+  async refresh(@Req() request: User['id'], @Body() body: string) {
+    try {
+      return this.authService.refresh(request, body);
     } catch (error) {
       throw new BadRequestException(error);
     }
