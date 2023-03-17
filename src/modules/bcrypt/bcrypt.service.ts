@@ -7,18 +7,18 @@ export class BcryptService {
   private readonly saltRounds = +config.verify.passwordSalt;
   private readonly logger = new Logger(BcryptService.name);
 
-  async compare(reqPassword: string, dbPassword: string): Promise<boolean> {
+  async compare(reqPassword: string, dbPassword: string) {
     try {
-      return bcrypt.compare(reqPassword, dbPassword);
+      return bcrypt.compareSync(reqPassword, dbPassword);
     } catch (error) {
       this.logger.error(error);
       throw new BadRequestException(error);
     }
   }
 
-  async hash(password: string): Promise<string> {
+  async hash(password: string) {
     try {
-      return bcrypt.hash(password, this.saltRounds);
+      return bcrypt.hashSync(password, this.saltRounds);
     } catch (error) {
       this.logger.error(error);
       throw new BadRequestException(error);

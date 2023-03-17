@@ -1,12 +1,10 @@
-import { UpdateUserPasswordType } from './user.types';
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm/dist';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { User } from './user.entity';
-import { UpdateUserType } from 'src/modules/user/user.types';
-import { DeleteResult, Repository } from 'typeorm';
 import { BcryptService } from '../bcrypt/bcrypt.service';
 import { CreateUserDto } from '../auth/auth.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { UpdateUserDto, UpdateUserPasswordDto } from './user.dto';
 
 @Injectable()
 export class UsersService {
@@ -16,17 +14,22 @@ export class UsersService {
     private readonly bcryptService: BcryptService,
   ) {}
 
-  async findAllUsers(): Promise<User[]> {
+  async findAllUsers() {
     return this.userRepository.find();
   }
 
-  async findUserById(id: number): Promise<User> {
+  async findUserById(id: number) {
     const user = this.userRepository.findOneBy({ id });
     return user;
   }
 
-  async findUserByEmail(email: string): Promise<User> {
-    const user = this.userRepository.findOneBy({ email });
+  async findUserByEmail(email: string) {
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .addSelect('user.password')
+      .where('user.email = :email', { email })
+      .getOne();
+
     return user;
   }
 
@@ -37,6 +40,7 @@ export class UsersService {
 
     newUser.email = email.trim().toLowerCase();
     newUser.password = await this.bcryptService.hash(password);
+
     newUser.fullName = fullName;
 
     await this.userRepository.save(newUser);
@@ -46,41 +50,73 @@ export class UsersService {
     return newUser;
   }
 
-  async updateUser(data: UpdateUserType): Promise<User> {
-    const { email, fullName, id } = data;
-    const userId = +id;
-    const currentUser = await this.userRepository.findOneBy({ id: userId });
+  async updateUser(data: UpdateUserDto, id: number) {
+    const { email, fullName } = data;
 
-    currentUser.fullName = fullName || currentUser.fullName;
-    currentUser.email = email || currentUser.email;
+    if (!email && !fullName) {
+      throw new BadRequestException({
+        message: 'Nothing to update',
+      });
+    }
+    const user = await this.userRepository.findOneBy({ id });
 
-    await this.userRepository.save(currentUser);
-
-    return currentUser;
-  }
-
-  async updateUserPassword(data: UpdateUserPasswordType) {
-    const { password, newPassword, id } = data;
-    const userId = +id;
-    const currentUser = await this.userRepository.findOneBy({ id: userId });
-    const isMatchPassword = await this.bcryptService.compare(
-      password,
-      newPassword,
-    );
-    if (!isMatchPassword) {
-      throw new BadRequestException('Password not valid');
+    if (email === user.email || fullName === user.fullName) {
+      throw new BadRequestException({
+        message: 'Update needs a new value',
+      });
+    } else {
+      user.fullName = fullName || user.fullName;
+      user.email = email || user.email;
+      await this.userRepository.save(user);
     }
 
-    const hashNewPassword = await this.bcryptService.hash(newPassword);
+    delete user.password;
 
-    currentUser.password = hashNewPassword;
-
-    await this.userRepository.save(currentUser);
-
-    return currentUser;
+    return user;
   }
 
-  async deleteUser(id: string): Promise<DeleteResult> {
-    return this.userRepository.delete(id);
+  async updateUserPassword(data: UpdateUserPasswordDto, id: number) {
+    const { password, newPassword } = data;
+
+    const user = await this.userRepository.findOneBy({ id });
+
+    const userWithPassword = await this.findUserByEmail(user.email);
+
+    const passwordCompared = await this.bcryptService.compare(
+      password,
+      userWithPassword.password,
+    );
+
+    if (!passwordCompared) {
+      throw new BadRequestException({
+        message: 'Your password is invalid',
+      });
+    }
+
+    if (password === newPassword) {
+      throw new BadRequestException({
+        message: 'Password and new password must be different',
+      });
+    } else {
+      const hashNewPassword = await this.bcryptService.hash(newPassword);
+
+      user.password = hashNewPassword;
+    }
+
+    await this.userRepository.save(user);
+
+    return user;
+  }
+
+  async deleteUser(id: number) {
+    const deleteResult = this.userRepository.delete(id);
+
+    if ((await deleteResult).affected === 0) {
+      throw new BadRequestException({
+        message: 'Unable delete user',
+      });
+    }
+
+    return true;
   }
 }

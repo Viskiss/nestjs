@@ -1,10 +1,9 @@
-import { LoginBodyDto } from './auth.dto';
+import { LoginUserDto } from './auth.dto';
 import { CreateUserDto } from './auth.dto';
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { BcryptService } from '../bcrypt/bcrypt.service';
 import { UsersService } from '../user/user.service';
-import { UserWithTokenType } from './auth.types';
 import config from 'src/configs/env.config';
 
 @Injectable()
@@ -19,7 +18,7 @@ export class AuthService {
     this.accessJwtSecret = config.verify.jwtSecret;
   }
 
-  async generateToken(email: string): Promise<string> {
+  async generateToken(email: string) {
     try {
       const accessToken: string = this.jwtService.sign(
         { email },
@@ -31,23 +30,22 @@ export class AuthService {
 
       return accessToken;
     } catch (error) {
-      console.log('error :>> ', error);
       throw new BadRequestException(error);
     }
   }
 
-  async login({ email, password }: LoginBodyDto) {
-    const userData = await this.usersService.findUserByEmail(email);
+  async login({ email, password }: LoginUserDto) {
+    const user = await this.usersService.findUserByEmail(email);
 
-    if (!userData) {
+    if (!user) {
       throw new BadRequestException({
         message: 'User not found',
       });
     }
 
     const passwordCompared = await this.bcryptService.compare(
-      userData.password,
       password,
+      user.password,
     );
 
     if (!passwordCompared) {
@@ -55,15 +53,17 @@ export class AuthService {
         message: 'Email or password is invalid',
       });
     }
+    const token = await this.generateToken(email);
 
-    return this.generateToken(email);
+    delete user.password;
+
+    return {
+      user,
+      token,
+    };
   }
 
-  async signUp({
-    email,
-    password,
-    fullName,
-  }: CreateUserDto): Promise<UserWithTokenType> {
+  async signUp({ email, password, fullName }: CreateUserDto) {
     const userWithThisEmail = await this.usersService.findUserByEmail(email);
 
     if (userWithThisEmail) {

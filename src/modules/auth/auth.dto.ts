@@ -2,16 +2,8 @@ import { IsString, IsEmail, IsOptional } from 'class-validator';
 
 import { IsPassword } from 'src/utils/validator/password';
 
-export class LoginBodyDto {
-  @IsString()
-  @IsEmail()
-  readonly email: string;
-
-  @IsPassword()
-  readonly password: string;
-}
-
 export class CreateUserDto {
+  @IsString()
   @IsEmail()
   email: string;
 
@@ -24,7 +16,12 @@ export class CreateUserDto {
   password: string;
 }
 
-export class RefreshBodyDto {
+export class LoginUserDto {
   @IsString()
-  readonly token: string;
+  @IsEmail()
+  readonly email: string;
+
+  @IsString()
+  @IsPassword()
+  readonly password: string;
 }

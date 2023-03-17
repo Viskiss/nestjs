@@ -1,17 +1,16 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
-  HttpStatus,
   Param,
+  ParseIntPipe,
   Patch,
-  Res,
   UseGuards,
 } from '@nestjs/common';
-import { Response } from 'express';
-import { UpdateUserType } from 'src/modules/user/user.types';
 import { UsersService } from './user.service';
 import { AccessGuard } from 'src/utils/authGuard/jwt.guards';
+import { UpdateUserDto, UpdateUserPasswordDto } from './user.dto';
 
 @Controller('users')
 export class UsersController {
@@ -25,29 +24,31 @@ export class UsersController {
 
   @UseGuards(AccessGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findUserById(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.usersService.findUserById(id);
   }
 
   @UseGuards(AccessGuard)
   @Patch('update/:id')
   updateUser(
-    @Param('id') id: string,
-    @Body() data: UpdateUserType,
-    @Res() res: Response,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: UpdateUserDto,
   ) {
-    const user = this.usersService.updateUser(data);
-    res.status(HttpStatus.CREATED).json(user);
+    return this.usersService.updateUser(data, id);
   }
 
   @UseGuards(AccessGuard)
-  @Patch('update/:id')
+  @Patch('update/password/:id')
   updateUserPassword(
-    @Param('id') id: string,
-    @Body() data: UpdateUserType,
-    @Res() res: Response,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: UpdateUserPasswordDto,
   ) {
-    const user = this.usersService.updateUser(data);
-    res.status(HttpStatus.CREATED).json(user);
+    return this.usersService.updateUserPassword(data, id);
+  }
+
+  @UseGuards(AccessGuard)
+  @Delete('delete/:id')
+  deleteUser(@Param('id', ParseIntPipe) id: number) {
+    return this.usersService.deleteUser(id);
   }
 }

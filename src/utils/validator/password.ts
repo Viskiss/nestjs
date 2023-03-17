@@ -7,11 +7,13 @@ export function IsPassword() {
       target: object.constructor,
       propertyName,
       options: {
-        message: 'Password length min 5',
+        message: 'Password length min 5, max 20',
       },
       validator: {
         validate(value: unknown) {
-          return typeof value === 'string' && value.length > 4;
+          return (
+            typeof value === 'string' && value.length > 4 && value.length < 20
+          );
         },
       },
     });
