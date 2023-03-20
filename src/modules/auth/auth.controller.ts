@@ -5,26 +5,32 @@ import {
   Body,
   BadRequestException,
   Req,
+  Get,
+  UseGuards,
 } from '@nestjs/common';
 
 import { LoginUserDto } from './auth.dto';
 import { AuthService } from './auth.service';
-import { User } from '../user/user.entity';
+
+import { RefreshBody, RequestGuard } from './auth.types';
+import { AccessGuard, RefreshGuard } from 'src/common/authGuard';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('/login')
-  async login(@Body() body: LoginUserDto) {
+  async signIn(@Body() body: LoginUserDto) {
     try {
+      console.log(body);
       return this.authService.login(body);
     } catch (error) {
+      console.log('body');
       throw new BadRequestException(error);
     }
   }
 
-  @Post('/signup')
+  @Post('/sign-up')
   async signUp(@Body() body: CreateUserDto) {
     try {
       return this.authService.signUp(body);
@@ -33,10 +39,21 @@ export class AuthController {
     }
   }
 
+  @UseGuards(RefreshGuard)
   @Post('/refresh')
-  async refresh(@Req() request: User['id'], @Body() body: string) {
+  async refresh(@Body() body: RefreshBody) {
     try {
-      return this.authService.refresh(request, body);
+      return this.authService.refresh(body.userId, body.token);
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  @UseGuards(AccessGuard)
+  @Get('/check-token')
+  async checkToken(@Req() request: RequestGuard) {
+    try {
+      return request.userId;
     } catch (error) {
       throw new BadRequestException(error);
     }

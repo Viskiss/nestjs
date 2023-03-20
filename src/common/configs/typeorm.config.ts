@@ -1,17 +1,15 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import Redis from 'ioredis';
 import * as path from 'path';
 import { DataSource } from 'typeorm';
-import config from './env.config';
 
 export const dataSource: TypeOrmModuleOptions = {
   type: 'postgres',
-  host: config.postgresDb.host,
-  port: config.postgresDb.port,
-  username: config.postgresDb.user,
-  password: config.postgresDb.password,
-  database: config.postgresDb.database,
-  logging: config.postgresDb.logging,
+  host: process.env.POSTGRES_DB_HOST,
+  port: Number(process.env.POSTGRES_DB_PORT),
+  username: process.env.POSTGRES_DB_USER,
+  password: process.env.POSTGRES_DB_PASSWORD,
+  database: process.env.POSTGRES_DB_NAME,
+  logging: process.env.POSTGRES_DB_LOGGING === 'true',
   synchronize: false,
   migrationsTableName: 'typeorm_migrations',
   entities: [path.normalize(`${__dirname}/entities/**/*.{ts,js}`)],
@@ -21,17 +19,15 @@ export const dataSource: TypeOrmModuleOptions = {
 
 export const typeOrmSourse = new DataSource({
   type: 'postgres',
-  host: config.postgresDb.host,
-  port: config.postgresDb.port,
-  username: config.postgresDb.user,
-  password: config.postgresDb.password,
-  database: config.postgresDb.database,
-  logging: config.postgresDb.logging,
+  host: process.env.POSTGRES_DB_HOST,
+  port: Number(process.env.POSTGRES_DB_PORT),
+  username: process.env.POSTGRES_DB_USER,
+  password: process.env.POSTGRES_DB_PASSWORD,
+  database: process.env.POSTGRES_DB_NAME,
+  logging: process.env.POSTGRES_DB_LOGGING === 'true',
   synchronize: false,
   subscribers: [],
   migrationsTableName: 'typeorm_migrations',
   entities: [path.normalize(`${__dirname}/entities/**/*.{ts,js}`)],
   migrations: [path.normalize(`${__dirname}/migrations/*.{ts,js}`)],
 });
-
-new Redis(+config.redis.port, config.redis.host);

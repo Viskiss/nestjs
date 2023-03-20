@@ -1,15 +1,18 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Module } from '@nestjs/common';
-import { UsersController } from './user.controller';
-import { UsersService } from './user.service';
-import { User } from './user.entity';
-import { userProviders } from './user.providers';
+
+import { User } from './users.entity';
+
+import { UsersController } from './users.controller';
+import { UsersService } from './users.service';
+import { usersProvider } from './users.providers';
+
 import { BcryptModule } from 'src/services/bcrypt/bcrypt.module';
 
 @Module({
   imports: [BcryptModule, TypeOrmModule.forFeature([User])],
-  providers: [UsersService, ...userProviders],
+  providers: [UsersService, ...usersProvider],
   controllers: [UsersController],
   exports: [UsersService],
 })
-export class UserModule {}
+export class UsersModule {}

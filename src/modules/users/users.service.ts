@@ -1,10 +1,12 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { User } from './user.entity';
-import { BcryptService } from '../../services/bcrypt/bcrypt.service';
-import { CreateUserDto } from '../auth/auth.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { UpdateUserDto, UpdateUserPasswordDto } from './user.dto';
+
+import { User } from './users.entity';
+import { CreateUserDto } from '../auth/auth.dto';
+import { UpdateUserDto, UpdateUserPasswordDto } from './users.dto';
+
+import { BcryptService } from 'src/services/bcrypt/bcrypt.service';
 
 @Injectable()
 export class UsersService {

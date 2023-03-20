@@ -1,9 +1,22 @@
-import { IsString, IsEmail, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsEmail,
+  IsOptional,
+  MinLength,
+  MaxLength,
+} from 'class-validator';
+
 import { IsPassword } from 'src/common/validator/password';
 
 export class CreateUserDto {
   @IsString()
   @IsEmail()
+  @MinLength(5, {
+    message: 'Email is too short',
+  })
+  @MaxLength(50, {
+    message: 'Email is too long',
+  })
   email: string;
 
   @IsString()
@@ -18,9 +31,15 @@ export class CreateUserDto {
 export class LoginUserDto {
   @IsString()
   @IsEmail()
-  readonly email: string;
+  @MinLength(5, {
+    message: 'Email is too short',
+  })
+  @MaxLength(50, {
+    message: 'Email is too long',
+  })
+  email: string;
 
   @IsString()
   @IsPassword()
-  readonly password: string;
+  password: string;
 }

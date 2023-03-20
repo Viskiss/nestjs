@@ -3,8 +3,7 @@ import { CreateUserDto } from './auth.dto';
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
-import { UsersService } from '../user/user.service';
-import config from 'src/common/configs/env.config';
+import { UsersService } from '../users/users.service';
 import { BcryptService } from 'src/services/bcrypt/bcrypt.service';
 import { RedisService } from 'src/services/redis/redis.service';
 
@@ -12,6 +11,8 @@ import { RedisService } from 'src/services/redis/redis.service';
 export class AuthService {
   private readonly accessJwtSecret: string;
   private readonly refreshJwtSecret: string;
+  private readonly accessToketTtl: string;
+  private readonly refreshTokenTtl: string;
 
   constructor(
     private readonly bcryptService: BcryptService,
@@ -19,8 +20,10 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly redisService: RedisService,
   ) {
-    this.accessJwtSecret = config.verify.jwtSecret;
-    this.refreshJwtSecret = config.verify.jwtSecret;
+    this.accessJwtSecret = process.env.ACCESS_SECRET;
+    this.refreshJwtSecret = process.env.REFRESH_SECRET;
+    this.accessToketTtl = process.env.ACCESS_TTL;
+    this.refreshTokenTtl = process.env.REFRESH_TTL;
   }
 
   async generateTokens(email: string) {
@@ -30,14 +33,14 @@ export class AuthService {
         { email },
         {
           secret: this.accessJwtSecret,
-          expiresIn: `30m`,
+          expiresIn: this.accessToketTtl,
         },
       );
       const refreshToken: string = this.jwtService.sign(
         { email },
         {
-          secret: this.accessJwtSecret,
-          expiresIn: `30m`,
+          secret: this.refreshJwtSecret,
+          expiresIn: this.refreshTokenTtl,
         },
       );
 
@@ -54,7 +57,7 @@ export class AuthService {
 
   async login({ email, password }: LoginUserDto) {
     const user = await this.usersService.findUserByEmail(email);
-
+    console.log(user);
     if (!user) {
       throw new BadRequestException({
         message: 'User not found',
@@ -65,13 +68,14 @@ export class AuthService {
       password,
       user.password,
     );
-
+    console.log(passwordCompared);
     if (!passwordCompared) {
       throw new BadRequestException({
         message: 'Email or password is invalid',
       });
     }
     const tokens = await this.generateTokens(email);
+    console.log(tokens);
 
     delete user.password;
 
@@ -102,22 +106,16 @@ export class AuthService {
     };
   }
 
-  async refresh(id: number, token: string) {
-    const savedRefreshToken = await this.redisService.get(`refresh_${id}`);
+  async refresh(userId: number, refreshToken: string) {
+    const savedRefreshToken = await this.redisService.get(`refresh_${userId}`);
 
-    if (savedRefreshToken !== token) {
+    if (savedRefreshToken !== refreshToken) {
       throw new BadRequestException({
         message: 'Refresh token is invalid',
       });
     }
 
-    const tokenPayload = await this.jwtService.verify(token, {
-      secret: this.refreshJwtSecret,
-    });
-
-    console.log(tokenPayload);
-
-    const user = await this.usersService.findUserById(id);
+    const user = await this.usersService.findUserById(userId);
 
     if (!user) {
       throw new BadRequestException({

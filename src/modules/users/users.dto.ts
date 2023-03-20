@@ -1,4 +1,5 @@
 import { IsEmail, IsOptional, MaxLength, MinLength } from 'class-validator';
+
 import { IsPassword } from 'src/common/validator/password';
 
 export class CreateUserDto {
@@ -18,7 +19,7 @@ export class UpdateUserDto {
   })
   @IsEmail()
   @IsOptional()
-  readonly email: string;
+  email: string;
 
   @MinLength(5, {
     message: 'Full name is too short',
@@ -27,12 +28,12 @@ export class UpdateUserDto {
     message: 'Full name is too long',
   })
   @IsOptional()
-  readonly fullName: string;
+  fullName: string;
 }
 
 export class UpdateUserPasswordDto {
   @IsPassword()
-  readonly password: string;
+  password: string;
 
   @MinLength(5, {
     message: 'New password name is too short',
@@ -40,5 +41,5 @@ export class UpdateUserPasswordDto {
   @MaxLength(50, {
     message: 'New password name is too long',
   })
-  readonly newPassword: string;
+  newPassword: string;
 }

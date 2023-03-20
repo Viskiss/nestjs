@@ -1,19 +1,25 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './modules/app.module';
-import config from './common/configs/env.config';
 import {
   ExpressAdapter,
   NestExpressApplication,
 } from '@nestjs/platform-express';
 
+import { Logger } from '@nestjs/common';
+
+import { AppModule } from './modules/app.module';
+
 async function bootstrap() {
+  const globalPrefix = process.env.SERVER_ENDPOINTS_PREFIX;
+  const port = process.env.SERVER_PORT;
   const app = await NestFactory.create<NestExpressApplication>(
     AppModule,
-    new ExpressAdapter(),
+    // new ExpressAdapter(),
+    // { ///cors: true },
   );
-  app.enableCors();
-  app.setGlobalPrefix('api');
+  // app.enableCors();
+  app.setGlobalPrefix(globalPrefix);
+  
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -21,7 +27,9 @@ async function bootstrap() {
       forbidUnknownValues: true,
     }),
   );
-  await app.listen(config.server.port);
+  await app.listen(port, () => {
+    Logger.log(`Listening at http://localhost:${port}/${globalPrefix}`);
+  });
 }
 
 bootstrap();

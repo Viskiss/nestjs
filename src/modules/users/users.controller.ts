@@ -8,9 +8,10 @@ import {
   Patch,
   UseGuards,
 } from '@nestjs/common';
-import { UsersService } from './user.service';
+
+import { UsersService } from './users.service';
 import { AccessGuard } from 'src/common/authGuard/jwt.guards';
-import { UpdateUserDto, UpdateUserPasswordDto } from './user.dto';
+import { UpdateUserDto, UpdateUserPasswordDto } from './users.dto';
 
 @Controller('users')
 export class UsersController {
