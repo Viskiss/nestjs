@@ -14,12 +14,10 @@ async function bootstrap() {
   const port = process.env.SERVER_PORT;
   const app = await NestFactory.create<NestExpressApplication>(
     AppModule,
-    // new ExpressAdapter(),
-    // { ///cors: true },
+    new ExpressAdapter(),
   );
-  // app.enableCors();
+
   app.setGlobalPrefix(globalPrefix);
-  
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

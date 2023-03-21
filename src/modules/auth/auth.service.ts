@@ -27,37 +27,34 @@ export class AuthService {
   }
 
   async generateTokens(email: string) {
-    try {
-      const user = await this.usersService.findUserByEmail(email);
-      const accessToken: string = this.jwtService.sign(
-        { email },
-        {
-          secret: this.accessJwtSecret,
-          expiresIn: this.accessToketTtl,
-        },
-      );
-      const refreshToken: string = this.jwtService.sign(
-        { email },
-        {
-          secret: this.refreshJwtSecret,
-          expiresIn: this.refreshTokenTtl,
-        },
-      );
+    const user = await this.usersService.findUserByEmail(email);
 
-      await this.redisService.set(`refresh_${user.id}`, refreshToken);
+    const accessToken: string = this.jwtService.sign(
+      { email },
+      {
+        secret: this.accessJwtSecret,
+        expiresIn: this.accessToketTtl,
+      },
+    );
 
-      return {
-        accessToken,
-        refreshToken,
-      };
-    } catch (error) {
-      throw new BadRequestException(error);
-    }
+    const refreshToken: string = this.jwtService.sign(
+      { email },
+      {
+        secret: this.refreshJwtSecret,
+        expiresIn: this.refreshTokenTtl,
+      },
+    );
+
+    await this.redisService.set(`refresh_${user.id}`, refreshToken);
+
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 
   async login({ email, password }: LoginUserDto) {
     const user = await this.usersService.findUserByEmail(email);
-    console.log(user);
     if (!user) {
       throw new BadRequestException({
         message: 'User not found',
@@ -68,14 +65,13 @@ export class AuthService {
       password,
       user.password,
     );
-    console.log(passwordCompared);
+
     if (!passwordCompared) {
       throw new BadRequestException({
-        message: 'Email or password is invalid',
+        message: 'Password is invalid',
       });
     }
     const tokens = await this.generateTokens(email);
-    console.log(tokens);
 
     delete user.password;
 

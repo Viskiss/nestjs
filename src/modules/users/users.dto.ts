@@ -43,3 +43,10 @@ export class UpdateUserPasswordDto {
   })
   newPassword: string;
 }
+
+export class UpdateUserAvatarDto {
+  @MinLength(5, {
+    message: 'Avatar data too short',
+  })
+  avatar: string;
+}

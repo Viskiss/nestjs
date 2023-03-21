@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
   Param,
   ParseIntPipe,
   Patch,
@@ -11,7 +13,11 @@ import {
 
 import { UsersService } from './users.service';
 import { AccessGuard } from 'src/common/authGuard/jwt.guards';
-import { UpdateUserDto, UpdateUserPasswordDto } from './users.dto';
+import {
+  UpdateUserAvatarDto,
+  UpdateUserDto,
+  UpdateUserPasswordDto,
+} from './users.dto';
 
 @Controller('users')
 export class UsersController {
@@ -48,8 +54,25 @@ export class UsersController {
   }
 
   @UseGuards(AccessGuard)
+  @Patch('update/avatar/:id')
+  async updateUserAvatar(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: UpdateUserAvatarDto,
+  ) {
+    await this.usersService.uploadUserAvatar(id, data.avatar);
+    throw new HttpException(
+      {
+        status: HttpStatus.CREATED,
+        error: 'Avatar set successfully',
+      },
+      HttpStatus.CREATED,
+    );
+  }
+
+  @UseGuards(AccessGuard)
   @Delete('delete/:id')
   deleteUser(@Param('id', ParseIntPipe) id: number) {
+    console.log(id);
     return this.usersService.deleteUser(id);
   }
 }

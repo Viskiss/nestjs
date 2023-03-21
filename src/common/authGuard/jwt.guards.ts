@@ -3,7 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
 export class AccessGuard extends AuthGuard('jwt') {
-  handleRequest(_, user) {
+  handleRequest(_: any, user: any) {
     if (!user) {
       throw new UnauthorizedException('Invalid token!');
     }
@@ -13,7 +13,7 @@ export class AccessGuard extends AuthGuard('jwt') {
 
 @Injectable()
 export class RefreshGuard extends AuthGuard('jwt-refresh') {
-  handleRequest(_, user) {
+  handleRequest(_: any, user: any) {
     if (!user) {
       throw new UnauthorizedException('Invalid token!');
     }

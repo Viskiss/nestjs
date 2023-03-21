@@ -5,14 +5,6 @@ import * as Joi from 'joi';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
 
-const database = registerAs('db', () => ({
-  host: process.env.POSTGRES_DB_HOST,
-  port: process.env.POSTGRES_DB_PORT,
-  username: process.env.POSTGRES_DB_USER,
-  password: process.env.POSTGRES_DB_PASSWORD,
-  name: process.env.POSTGRES_DB_NAME,
-}));
-
 const jwt = registerAs('jwt', () => ({
   accessSecret: process.env.ACCESS_SECRET,
   refreshSecret: process.env.REFRESH_SECRET,
@@ -39,7 +31,7 @@ export const EnvConfig = {
     REDIS_PORT: Joi.string().required(),
     REDIS_TTL: Joi.number().required(),
   }),
-  load: [database, jwt, redis],
+  load: [jwt, redis],
   isGlobal: true,
 };
 

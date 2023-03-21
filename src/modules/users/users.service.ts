@@ -62,7 +62,7 @@ export class UsersService {
     }
     const user = await this.userRepository.findOneBy({ id });
 
-    if (email === user.email || fullName === user.fullName) {
+    if (email === user.email && fullName === user.fullName) {
       throw new BadRequestException({
         message: 'Update needs a new value',
       });
@@ -108,6 +108,22 @@ export class UsersService {
     await this.userRepository.save(user);
 
     return user;
+  }
+
+  async uploadUserAvatar(id: number, avatar: string) {
+    const user = await this.userRepository.findOneBy({ id });
+
+    if (!user) {
+      throw new BadRequestException({
+        message: 'User not found',
+      });
+    }
+
+    user.avatar = avatar;
+
+    await this.userRepository.save(user);
+
+    return true;
   }
 
   async deleteUser(id: number) {
