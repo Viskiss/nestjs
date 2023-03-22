@@ -18,7 +18,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "typeorm-cli": "ts-node node_modules/typeorm/cli.js --dataSource src/db/database.providers.ts",
+    "typeorm-cli": "ts-node node_modules/typeorm/cli.js --dataSource src/db/dataSource.ts",
     "db:sync": "npm run typeorm-cli -- migration:generate -p src/db/migrations/sync",
     "db:migrate:up": "npm run typeorm-cli -- migration:run",
     "db:migrate:down": "npm run typeorm-cli -- migration:revert"
@@ -27,6 +27,7 @@
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.3.1",
     "@nestjs/core": "^9.0.0",
+    "@nestjs/cqrs": "^9.0.3",
     "@nestjs/jwt": "^10.0.2",
     "@nestjs/microservices": "^9.3.10",
     "@nestjs/passport": "^9.0.3",

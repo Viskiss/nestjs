@@ -36,7 +36,7 @@ export class UsersController {
   }
 
   @UseGuards(AccessGuard)
-  @Patch('update/:id')
+  @Patch(':id')
   updateUser(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateUserDto,
@@ -45,7 +45,7 @@ export class UsersController {
   }
 
   @UseGuards(AccessGuard)
-  @Patch('update/password/:id')
+  @Patch('password/:id')
   updateUserPassword(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateUserPasswordDto,
@@ -54,7 +54,7 @@ export class UsersController {
   }
 
   @UseGuards(AccessGuard)
-  @Patch('update/avatar/:id')
+  @Patch('avatar/:id')
   async updateUserAvatar(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateUserAvatarDto,
@@ -72,7 +72,6 @@ export class UsersController {
   @UseGuards(AccessGuard)
   @Delete('delete/:id')
   deleteUser(@Param('id', ParseIntPipe) id: number) {
-    console.log(id);
     return this.usersService.deleteUser(id);
   }
 }

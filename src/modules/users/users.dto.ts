@@ -12,10 +12,10 @@ export class CreateUserDto {
 
 export class UpdateUserDto {
   @MinLength(5, {
-    message: 'Full name is too short',
+    message: 'Email is too short',
   })
   @MaxLength(50, {
-    message: 'Full name is too long',
+    message: 'Email is too long',
   })
   @IsEmail()
   @IsOptional()

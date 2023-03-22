@@ -1,6 +1,11 @@
 import { LoginUserDto } from './auth.dto';
 import { CreateUserDto } from './auth.dto';
-import { Injectable, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { UsersService } from '../users/users.service';
@@ -29,8 +34,10 @@ export class AuthService {
   async generateTokens(email: string) {
     const user = await this.usersService.findUserByEmail(email);
 
+    const { id } = user;
+
     const accessToken: string = this.jwtService.sign(
-      { email },
+      { id },
       {
         secret: this.accessJwtSecret,
         expiresIn: this.accessToketTtl,
@@ -38,7 +45,7 @@ export class AuthService {
     );
 
     const refreshToken: string = this.jwtService.sign(
-      { email },
+      { id },
       {
         secret: this.refreshJwtSecret,
         expiresIn: this.refreshTokenTtl,
@@ -46,7 +53,6 @@ export class AuthService {
     );
 
     await this.redisService.set(`refresh_${user.id}`, refreshToken);
-
     return {
       accessToken,
       refreshToken,
@@ -56,7 +62,7 @@ export class AuthService {
   async login({ email, password }: LoginUserDto) {
     const user = await this.usersService.findUserByEmail(email);
     if (!user) {
-      throw new BadRequestException({
+      throw new NotFoundException({
         message: 'User not found',
       });
     }
@@ -85,7 +91,7 @@ export class AuthService {
     const userWithThisEmail = await this.usersService.findUserByEmail(email);
 
     if (userWithThisEmail) {
-      throw new BadRequestException('User with this email already created');
+      throw new NotFoundException('User with this email already created');
     }
 
     const user = await this.usersService.createUser({
@@ -93,6 +99,10 @@ export class AuthService {
       password,
       fullName,
     });
+
+    if (!user) {
+      throw new InternalServerErrorException('Unable create user');
+    }
 
     const tokens = await this.generateTokens(email);
 
@@ -102,8 +112,14 @@ export class AuthService {
     };
   }
 
-  async refresh(userId: number, refreshToken: string) {
-    const savedRefreshToken = await this.redisService.get(`refresh_${userId}`);
+  async refresh(refreshToken: string) {
+    const token = this.jwtService.verify(refreshToken, {
+      secret: this.refreshJwtSecret,
+    });
+
+    const savedRefreshToken = await this.redisService.get(
+      `refresh_${token.id}`,
+    );
 
     if (savedRefreshToken !== refreshToken) {
       throw new BadRequestException({
@@ -111,14 +127,14 @@ export class AuthService {
       });
     }
 
-    const user = await this.usersService.findUserById(userId);
+    const user = await this.usersService.findUserById(token.id);
 
     if (!user) {
-      throw new BadRequestException({
+      throw new NotFoundException({
         message: 'Refresh token is invalid',
       });
     }
 
-    return this.generateTokens(user.email);
+    return await this.generateTokens(user.email);
   }
 }

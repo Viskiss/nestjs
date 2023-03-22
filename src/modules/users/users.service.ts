@@ -1,8 +1,14 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { User } from './users.entity';
+import User from '../../db/entities/user.entity';
 import { CreateUserDto } from '../auth/auth.dto';
 import { UpdateUserDto, UpdateUserPasswordDto } from './users.dto';
 
@@ -17,12 +23,24 @@ export class UsersService {
   ) {}
 
   async findAllUsers() {
+    /**
+     * limit
+     * page / offset
+     * dateFrom
+     * dateTo
+     */
     return this.userRepository.find();
   }
 
   async findUserById(id: number) {
-    const user = this.userRepository.findOneBy({ id });
-    return user;
+    try {
+      return this.userRepository.findOneBy({ id });
+    } catch (error) {
+      throw new HttpException(
+        'INTERNAL_SERVER_ERROR',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   async findUserByEmail(email: string) {
@@ -82,6 +100,12 @@ export class UsersService {
 
     const user = await this.userRepository.findOneBy({ id });
 
+    if (!user) {
+      throw new NotFoundException({
+        message: 'User not found',
+      });
+    }
+
     const userWithPassword = await this.findUserByEmail(user.email);
 
     const passwordCompared = await this.bcryptService.compare(
@@ -114,7 +138,7 @@ export class UsersService {
     const user = await this.userRepository.findOneBy({ id });
 
     if (!user) {
-      throw new BadRequestException({
+      throw new NotFoundException({
         message: 'User not found',
       });
     }

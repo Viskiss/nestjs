@@ -1,12 +1,5 @@
 import { CreateUserDto } from './auth.dto';
-import {
-  Controller,
-  Post,
-  Body,
-  UseGuards,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
+import { Controller, Post, Body, UseGuards } from '@nestjs/common';
 
 import { LoginUserDto } from './auth.dto';
 import { AuthService } from './auth.service';
@@ -20,56 +13,17 @@ export class AuthController {
 
   @Post('/login')
   async signIn(@Body() body: LoginUserDto) {
-    try {
-      return this.authService.login(body);
-    } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.FORBIDDEN,
-          error: error,
-        },
-        HttpStatus.FORBIDDEN,
-        {
-          cause: error,
-        },
-      );
-    }
+    return this.authService.login(body);
   }
 
   @Post('/sign-up')
   async signUp(@Body() body: CreateUserDto) {
-    try {
-      return this.authService.signUp(body);
-    } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.FORBIDDEN,
-          error: error,
-        },
-        HttpStatus.FORBIDDEN,
-        {
-          cause: error,
-        },
-      );
-    }
+    return this.authService.signUp(body);
   }
 
   @UseGuards(RefreshGuard)
   @Post('/refresh')
   async refresh(@Body() body: RefreshBody) {
-    try {
-      return this.authService.refresh(body.userId, body.token);
-    } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.CONFLICT,
-          error: error,
-        },
-        HttpStatus.CONFLICT,
-        {
-          cause: error,
-        },
-      );
-    }
+    return this.authService.refresh(body.token);
   }
 }

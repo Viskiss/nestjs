@@ -14,10 +14,10 @@ export class RedisService {
   }
 
   async get<T>(key: string): Promise<T> {
-    return this.cache.get(key);
+    return await this.cache.get(key);
   }
 
   async set<T>(key: string, value: string): Promise<T | void> {
-    return this.cache.set(key, value, +this.cacheTtl);
+    return await this.cache.set(key, value, +this.cacheTtl);
   }
 }
