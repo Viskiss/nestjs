@@ -23,13 +23,14 @@ export class UsersService {
   ) {}
 
   async findAllUsers() {
-    /**
-     * limit
-     * page / offset
-     * dateFrom
-     * dateTo
-     */
-    return this.userRepository.find();
+    try {
+      return this.userRepository.find();
+    } catch (error) {
+      throw new HttpException(
+        'INTERNAL_SERVER_ERROR',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   async findUserById(id: number) {
@@ -151,9 +152,9 @@ export class UsersService {
   }
 
   async deleteUser(id: number) {
-    const deleteResult = this.userRepository.delete(id);
+    const deleteResult = await this.userRepository.delete(id);
 
-    if ((await deleteResult).affected === 0) {
+    if (deleteResult.affected === 0) {
       throw new BadRequestException({
         message: 'Unable delete user',
       });

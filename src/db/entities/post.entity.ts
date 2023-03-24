@@ -4,9 +4,9 @@ import {
   JoinColumn,
   OneToMany,
   Column,
+  ManyToOne,
 } from 'typeorm';
 import Comment from './comment.entity';
-
 import User from './user.entity';
 
 @Entity()
@@ -15,18 +15,17 @@ class Post {
   id: number;
 
   @Column({ type: 'varchar', nullable: false })
-  userId: number;
-
-  @Column({ type: 'varchar', nullable: false })
   text: string;
 
-  @OneToMany(() => Comment, (comment) => comment.id)
-  @JoinColumn({ name: 'commentId' })
-  comment: Comment;
+  @Column({ type: 'varchar', nullable: false })
+  userId: number;
 
-  @OneToMany(() => User, (user) => user.id)
+  @OneToMany(() => Comment, (comment) => comment.content)
+  comments: Comment[];
+
+  @ManyToOne(() => User, (user) => user.id)
   @JoinColumn({ name: 'userId' })
-  user: User;
+  author: User;
 }
 
 export default Post;
