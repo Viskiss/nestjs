@@ -30,8 +30,8 @@ export default class PostsController {
 
   @Get()
   @UseGuards(AccessGuard)
-  async getAllPosts(@Param() type: string) {
-    return this.commandBus.execute(new GetAllPostsCommand(type));
+  async getAllPosts() {
+    return this.commandBus.execute(new GetAllPostsCommand());
   }
 
   @Post(':id')

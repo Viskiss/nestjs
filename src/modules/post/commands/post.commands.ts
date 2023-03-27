@@ -13,9 +13,7 @@ export class DeletePostCommand {
   constructor(public readonly postId: number, public readonly userId: number) {}
 }
 
-export class GetAllPostsCommand {
-  constructor(public readonly type: string) {}
-}
+export class GetAllPostsCommand {}
 
 export class UpdatePostCommand {
   constructor(

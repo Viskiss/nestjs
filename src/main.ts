@@ -4,6 +4,7 @@ import {
   ExpressAdapter,
   NestExpressApplication,
 } from '@nestjs/platform-express';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 import { Logger } from '@nestjs/common';
 
@@ -25,6 +26,16 @@ async function bootstrap() {
       forbidUnknownValues: true,
     }),
   );
+
+  const config = new DocumentBuilder()
+    .setTitle('UserApie')
+    .setDescription('The user API description')
+    .setVersion('1.0')
+    .addTag('user')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
+
   await app.listen(port, () => {
     Logger.log(`Listening at http://localhost:${port}/${globalPrefix}`);
   });
