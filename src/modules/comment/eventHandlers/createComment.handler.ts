@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { CreateCommentCommand } from '../commands/comment.commands';
-import Comment from 'src/db/entities/comment.entity';
+import Comment from '../../../db/entities/comment.entity';
 import { BadRequestException } from '@nestjs/common';
 
 @CommandHandler(CreateCommentCommand)

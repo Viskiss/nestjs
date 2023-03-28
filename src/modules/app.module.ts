@@ -1,11 +1,11 @@
 import { CacheModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { EnvConfig } from 'src/common/configs/env.config copy';
+import { EnvConfig } from '../common/configs/env.config';
 
-import { dataSource } from 'src/db/dataSource';
-import { CommentsModule } from 'src/modules/comment/comment.module';
-import { PostsModule } from 'src/modules/post/post.module';
+import { dataSource } from '../db/dataSource';
+import { CommentsModule } from '../modules/comment/comment.module';
+import { PostsModule } from '../modules/post/post.module';
 
 import { AuthCQRSModule } from './auth-cqrs/auth.module';
 import { UsersCQRSModule } from './users-cqrs/users.module';

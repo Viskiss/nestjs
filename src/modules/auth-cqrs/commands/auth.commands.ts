@@ -1,7 +1,7 @@
-import { CreateUserDto, LoginUserDto } from '../auth.dto';
+import { CreateUserDto, SignInUserDto } from '../auth.dto';
 
-export class LogInCommand {
-  constructor(public readonly body: LoginUserDto) {}
+export class SignInCommand {
+  constructor(public readonly body: SignInUserDto) {}
 }
 
 export class SignUpCommand {

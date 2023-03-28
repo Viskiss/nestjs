@@ -3,8 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
-  HttpStatus,
   Param,
   ParseIntPipe,
   Patch,
@@ -12,7 +10,7 @@ import {
 } from '@nestjs/common';
 
 import { UsersService } from './users.service';
-import { AccessGuard } from 'src/common/authGuard/jwt.guards';
+import { AccessGuard } from '../../common/authGuard/jwt.guards';
 import {
   UpdateUserAvatarDto,
   UpdateUserDto,
@@ -59,14 +57,7 @@ export class UsersController {
     @Param('id', ParseIntPipe) id: number,
     @Body() data: UpdateUserAvatarDto,
   ) {
-    await this.usersService.uploadUserAvatar(id, data.avatar);
-    throw new HttpException(
-      {
-        status: HttpStatus.CREATED,
-        error: 'Avatar set successfully',
-      },
-      HttpStatus.CREATED,
-    );
+    return this.usersService.uploadUserAvatar(id, data);
   }
 
   @UseGuards(AccessGuard)

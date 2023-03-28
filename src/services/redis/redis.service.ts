@@ -10,7 +10,7 @@ export class RedisService {
     private readonly cache: Cache,
     private readonly configService: ConfigService,
   ) {
-    this.cacheTtl = this.configService.get('REDIS_TTL');
+    this.cacheTtl = '100000' || this.configService.get('REDIS_TTL');
   }
 
   async get<T>(key: string): Promise<T> {

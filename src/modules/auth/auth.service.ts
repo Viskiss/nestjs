@@ -1,4 +1,4 @@
-import { LoginUserDto } from './auth.dto';
+import { SignInUserDto } from './auth.dto';
 import { CreateUserDto } from './auth.dto';
 import {
   Injectable,
@@ -9,8 +9,8 @@ import {
 import { JwtService } from '@nestjs/jwt';
 
 import { UsersService } from '../users/users.service';
-import { BcryptService } from 'src/services/bcrypt/bcrypt.service';
-import { RedisService } from 'src/services/redis/redis.service';
+import { BcryptService } from '../../services/bcrypt/bcrypt.service';
+import { RedisService } from '../../services/redis/redis.service';
 
 @Injectable()
 export class AuthService {
@@ -59,7 +59,7 @@ export class AuthService {
     };
   }
 
-  async login({ email, password }: LoginUserDto) {
+  async signIn({ email, password }: SignInUserDto) {
     const user = await this.usersService.findUserByEmail(email);
     if (!user) {
       throw new NotFoundException({

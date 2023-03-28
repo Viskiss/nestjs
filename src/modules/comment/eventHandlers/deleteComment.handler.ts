@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { DeleteCommentCommand } from '../commands/comment.commands';
-import Comment from 'src/db/entities/comment.entity';
+import Comment from '../../../db/entities/comment.entity';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 @CommandHandler(DeleteCommentCommand)

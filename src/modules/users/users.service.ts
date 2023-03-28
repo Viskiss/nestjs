@@ -12,7 +12,7 @@ import User from '../../db/entities/user.entity';
 import { CreateUserDto } from '../auth/auth.dto';
 import { UpdateUserDto, UpdateUserPasswordDto } from './users.dto';
 
-import { BcryptService } from 'src/services/bcrypt/bcrypt.service';
+import { BcryptService } from '../../services/bcrypt/bcrypt.service';
 
 @Injectable()
 export class UsersService {
@@ -135,7 +135,7 @@ export class UsersService {
     return user;
   }
 
-  async uploadUserAvatar(id: number, avatar: string) {
+  async uploadUserAvatar(id: number, data: { avatar: string }) {
     const user = await this.userRepository.findOneBy({ id });
 
     if (!user) {
@@ -144,7 +144,7 @@ export class UsersService {
       });
     }
 
-    user.avatar = avatar;
+    user.avatar = data.avatar;
 
     await this.userRepository.save(user);
 

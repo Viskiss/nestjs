@@ -13,7 +13,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 
-import { AccessGuard } from 'src/common/authGuard/jwt.guards';
+import { AccessGuard } from '../../common/authGuard/jwt.guards';
 import {
   UpdateUserAvatarDto,
   UpdateUserDto,

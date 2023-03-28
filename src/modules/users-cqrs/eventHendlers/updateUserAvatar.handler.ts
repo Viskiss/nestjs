@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { NotFoundException } from '@nestjs/common';
 
 import { UpdateUserAvatarCommand } from '../commands/users.commands';
-import User from 'src/db/entities/user.entity';
+import User from '../../../db/entities/user.entity';
 
 @CommandHandler(UpdateUserAvatarCommand)
 export class UpdateUserAvatarHandler

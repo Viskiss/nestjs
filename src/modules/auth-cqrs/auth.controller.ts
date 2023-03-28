@@ -8,12 +8,12 @@ import {
   ClassSerializerInterceptor,
 } from '@nestjs/common';
 
-import { LoginUserDto } from './auth.dto';
+import { SignInUserDto } from './auth.dto';
 
-import { RefreshGuard } from 'src/common/authGuard';
+import { RefreshGuard } from '../../common/authGuard';
 import { CommandBus } from '@nestjs/cqrs';
 import {
-  LogInCommand,
+  SignInCommand,
   RefreshTokenCommand,
   SignUpCommand,
 } from './commands/auth.commands';
@@ -23,9 +23,9 @@ import {
 export default class AuthController {
   constructor(private commandBus: CommandBus) {}
 
-  @Post('/login')
-  async logIn(@Body() body: LoginUserDto) {
-    return this.commandBus.execute(new LogInCommand(body));
+  @Post('/sign-in')
+  async signIn(@Body() body: SignInUserDto) {
+    return this.commandBus.execute(new SignInCommand(body));
   }
 
   @Post('/sign-up')

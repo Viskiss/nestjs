@@ -1,10 +1,10 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-
-import Post from 'src/db/entities/post.entity';
-import { GetAllPostsCommand } from '../commands/post.commands';
 import { BadRequestException } from '@nestjs/common';
+
+import Post from '../../../db/entities/post.entity';
+import { GetAllPostsCommand } from '../commands/post.commands';
 
 @CommandHandler(GetAllPostsCommand)
 export class GetAllPostsHandler implements ICommandHandler<GetAllPostsCommand> {

@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
-import { AccessGuard } from 'src/common/authGuard';
+import { AccessGuard } from '../../common/authGuard';
 import {
   GetAllPostsCommand,
   CreatePostCommand,

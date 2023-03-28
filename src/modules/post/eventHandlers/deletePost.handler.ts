@@ -1,10 +1,10 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-
-import Post from 'src/db/entities/post.entity';
-import { DeletePostCommand } from '../commands/post.commands';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
+
+import Post from '../../../db/entities/post.entity';
+import { DeletePostCommand } from '../commands/post.commands';
 
 @CommandHandler(DeletePostCommand)
 export class DeletePostHandler implements ICommandHandler<DeletePostCommand> {

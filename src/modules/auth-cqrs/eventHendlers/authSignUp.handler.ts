@@ -7,31 +7,19 @@ import {
 } from '@nestjs/common';
 
 import { SignUpCommand } from '../commands/auth.commands';
-import User from 'src/db/entities/user.entity';
-import { BcryptService } from 'src/services/bcrypt/bcrypt.service';
-import { JwtService } from '@nestjs/jwt';
-import { RedisService } from 'src/services/redis/redis.service';
+import User from '../../../db/entities/user.entity';
+import { BcryptService } from '../../../services/bcrypt/bcrypt.service';
 import { CreateUserDto } from '../auth.dto';
+import { JwtTokenService } from '../../../services/jwt/jwt.service';
 
 @CommandHandler(SignUpCommand)
 export class AuthSignUpHandler implements ICommandHandler<SignUpCommand> {
-  private readonly accessJwtSecret: string;
-  private readonly refreshJwtSecret: string;
-  private readonly accessToketTtl: string;
-  private readonly refreshTokenTtl: string;
-
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private readonly bcryptService: BcryptService,
-    private readonly jwtService: JwtService,
-    private readonly redisService: RedisService,
-  ) {
-    this.accessJwtSecret = process.env.ACCESS_SECRET;
-    this.refreshJwtSecret = process.env.REFRESH_SECRET;
-    this.accessToketTtl = process.env.ACCESS_TTL;
-    this.refreshTokenTtl = process.env.REFRESH_TTL;
-  }
+    private readonly jwtTokenService: JwtTokenService,
+  ) {}
 
   async createUser(body: CreateUserDto) {
     const { email, password, fullName } = body;
@@ -48,36 +36,6 @@ export class AuthSignUpHandler implements ICommandHandler<SignUpCommand> {
     delete newUser.password;
 
     return newUser;
-  }
-
-  async generateTokens(email: string) {
-    const user = await this.userRepository.findOneBy({
-      email,
-    });
-
-    const { id } = user;
-
-    const accessToken: string = this.jwtService.sign(
-      { id },
-      {
-        secret: this.accessJwtSecret,
-        expiresIn: this.accessToketTtl,
-      },
-    );
-
-    const refreshToken: string = this.jwtService.sign(
-      { id },
-      {
-        secret: this.refreshJwtSecret,
-        expiresIn: this.refreshTokenTtl,
-      },
-    );
-
-    await this.redisService.set(`refresh_${user.id}`, refreshToken);
-    return {
-      accessToken,
-      refreshToken,
-    };
   }
 
   async execute(command: SignUpCommand) {
@@ -99,7 +57,9 @@ export class AuthSignUpHandler implements ICommandHandler<SignUpCommand> {
       throw new InternalServerErrorException('Unable create user');
     }
 
-    const tokens = await this.generateTokens(command.body.email);
+    const tokens = await this.jwtTokenService.generateTokens(
+      command.body.email,
+    );
 
     return {
       user,

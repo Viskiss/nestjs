@@ -1,11 +1,11 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 import { CreatePostCommand } from '../commands/post.commands';
-import Post from 'src/db/entities/post.entity';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { UsersService } from 'src/modules/users/users.service';
+import Post from '../../../db/entities/post.entity';
+import { UsersService } from '../../../modules/users/users.service';
 
 @CommandHandler(CreatePostCommand)
 export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {

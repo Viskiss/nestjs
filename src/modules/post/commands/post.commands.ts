@@ -1,4 +1,4 @@
-import User from 'src/db/entities/user.entity';
+import User from '../../../db/entities/user.entity';
 
 import { UpdatePostDto } from '../post.dto';
 

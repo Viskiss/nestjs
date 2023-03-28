@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 
 import { DeleteUserProfileCommand } from '../commands/users.commands';
 import { BadRequestException } from '@nestjs/common';
-import User from 'src/db/entities/user.entity';
+import User from '../../../db/entities/user.entity';
 
 @CommandHandler(DeleteUserProfileCommand)
 export class DeleteUserHandler

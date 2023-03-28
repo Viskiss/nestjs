@@ -4,8 +4,8 @@ import { Repository } from 'typeorm';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 import { UpdateUserPasswordCommand } from '../commands/users.commands';
-import User from 'src/db/entities/user.entity';
-import { BcryptService } from 'src/services/bcrypt/bcrypt.service';
+import User from '../../../db/entities/user.entity';
+import { BcryptService } from '../../../services/bcrypt/bcrypt.service';
 
 @CommandHandler(UpdateUserPasswordCommand)
 export class UpdateUserPasswordHandler

@@ -8,7 +8,7 @@ import {
   UpdateCommentHandler,
   GetCommentsHandler,
 } from './eventHandlers';
-import Comment from 'src/db/entities/comment.entity';
+import Comment from '../../db/entities/comment.entity';
 import { PostsModule } from '../post/post.module';
 import { DeleteCommentHandler } from './eventHandlers/deleteComment.handler';
 

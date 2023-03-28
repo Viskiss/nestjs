@@ -6,7 +6,7 @@ import {
   MaxLength,
 } from 'class-validator';
 
-import { IsPassword } from 'src/common/validator/password';
+import { IsPassword } from '../../common/validator/password';
 
 export class CreateUserDto {
   @IsString()
@@ -28,7 +28,7 @@ export class CreateUserDto {
   password: string;
 }
 
-export class LoginUserDto {
+export class SignInUserDto {
   @IsString()
   @IsEmail()
   @MinLength(5, {

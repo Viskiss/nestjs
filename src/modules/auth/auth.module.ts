@@ -6,13 +6,13 @@ import { JwtModule } from '@nestjs/jwt';
 import {
   JwtAccessStrategy,
   JwtRefreshStrategy,
-} from 'src/common/authGuard/jwt.strategies';
+} from '../../common/authGuard/jwt.strategies';
 
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UsersModule } from '../users/users.module';
-import { BcryptModule } from 'src/services/bcrypt/bcrypt.module';
-import { RedisModule } from 'src/services/redis/redis.module';
+import { BcryptModule } from '../../services/bcrypt/bcrypt.module';
+import { RedisModule } from '../../services/redis/redis.module';
 
 @Module({
   imports: [

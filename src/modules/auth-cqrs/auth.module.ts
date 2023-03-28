@@ -2,22 +2,25 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
+import { CqrsModule } from '@nestjs/cqrs';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 import {
   JwtAccessStrategy,
   JwtRefreshStrategy,
-} from 'src/common/authGuard/jwt.strategies';
+} from '../../common/authGuard/jwt.strategies';
 
 import AuthController from './auth.controller';
 import { UsersCQRSModule } from '../users-cqrs/users.module';
-import { BcryptModule } from 'src/services/bcrypt/bcrypt.module';
-import { RedisModule } from 'src/services/redis/redis.module';
-import { CqrsModule } from '@nestjs/cqrs';
-import { AuthLogInHandler } from './eventHendlers/authLogIn.handler';
-import { AuthSignUpHandler } from './eventHendlers/authSignUp.handler';
-import { RefreshTokenHandler } from './eventHendlers/refreshToken.handler';
-import User from 'src/db/entities/user.entity';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { BcryptModule } from '../../services/bcrypt/bcrypt.module';
+import { RedisModule } from '../../services/redis/redis.module';
+import {
+  AuthSignInHandler,
+  AuthSignUpHandler,
+  RefreshTokenHandler,
+} from './eventHendlers';
+import User from '../../db/entities/user.entity';
+import { JwtTokenModule } from 'src/services/jwt/jwt.module';
 
 @Module({
   imports: [
@@ -27,6 +30,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     JwtModule.register({}),
     PassportModule,
     BcryptModule,
+    JwtTokenModule,
     UsersCQRSModule,
     CqrsModule,
   ],
@@ -34,7 +38,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
   providers: [
     JwtAccessStrategy,
     JwtRefreshStrategy,
-    AuthLogInHandler,
+    AuthSignInHandler,
     AuthSignUpHandler,
     RefreshTokenHandler,
   ],
