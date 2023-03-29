@@ -1,9 +1,17 @@
+import { Test } from '@nestjs/testing';
 import { BcryptService } from './bcrypt.service';
 
 describe('bcrypt test', () => {
-  it('Return boolean result before compare passwords', async () => {
-    const bcryptService = new BcryptService();
+  let bcryptService: BcryptService;
 
+  beforeEach(async () => {
+    const module = await Test.createTestingModule({
+      providers: [BcryptService],
+    }).compile();
+    bcryptService = module.get<BcryptService>(BcryptService);
+  });
+
+  it('Return boolean result before compare passwords', async () => {
     const compareTrue = await bcryptService.compare(
       '11111',
       '$2a$10$0ALq5gVIkLio0OM.hlFb.eBFwmgHlUmqmh5GT146rV69svI2SeNr6',
@@ -18,7 +26,7 @@ describe('bcrypt test', () => {
   });
 
   it('Return string result before hash password', async () => {
-    const bcryptService = new BcryptService();
+    // const bcryptService = new BcryptService();
 
     const hash = await bcryptService.hash('11111');
 

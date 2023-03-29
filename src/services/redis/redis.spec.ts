@@ -1,28 +1,46 @@
-import { Type } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { Cache } from 'cache-manager';
+import { CacheModule } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
 
 import { RedisService } from './redis.service';
+import { RedisClientOptions } from 'redis';
 
 describe('redis test', () => {
-  let cache: Cache;
-  let configService: ConfigService;
+  let redisService: RedisService;
+  let module: TestingModule;
 
-  describe('testing redis service', () => {
-    it('Return string by key from cache redis', async () => {
-      const redisService = new RedisService(cache, configService);
-      const result = await redisService.get<Type>('some key string');
+  beforeAll(async () => {
+    module = await Test.createTestingModule({
+      imports: [
+        ConfigModule,
+        CacheModule.registerAsync<RedisClientOptions>({
+          imports: [ConfigModule],
+          inject: [ConfigService],
+          useFactory: () => ({
+            host: process.env.REDIS_HOST,
+            port: process.env.REDIS_PORT,
+            ttl: +process.env.REDIS_TTL,
+          }),
+        }),
+      ],
+      providers: [RedisService],
+    }).compile();
+    redisService = module.get<RedisService>(RedisService);
+  });
 
-      expect(result).toBe(result);
-    });
+  it('Return string by key from cache redis', async () => {
+    const test_One = await redisService.get('some string');
+    const test_Two = await redisService.get('1');
 
-    // it('Return string by key from cache redis', async () => {
-    //   const result = '' as unknown as Promise<Type | void>;
-    //   jest.spyOn(redisService, 'set').mockImplementation(async () => result);
+    console.log(test_One);
 
-    //   expect(
-    //     await redisService.set<Promise<Type | void>>('some key', 'some value'),
-    //   ).toBe(result);
-    // });
+    expect(await test_One).not.toBe('');
+    expect(await test_Two).toBeUndefined();
+  });
+
+  it('Return string by key from cache redis', async () => {
+    const test_One = await redisService.set('some string', '');
+
+    expect(test_One).toBeUndefined();
   });
 });

@@ -28,7 +28,7 @@ async function bootstrap() {
   );
 
   const config = new DocumentBuilder()
-    .setTitle('UserApie')
+    .setTitle('UserApi')
     .setDescription('The user API description')
     .setVersion('1.0')
     .addTag('user')

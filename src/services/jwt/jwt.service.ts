@@ -8,10 +8,11 @@ import { RedisService } from '../redis/redis.service';
 
 @Injectable()
 export class JwtTokenService {
-  private readonly accessJwtSecret = process.env.ACCESS_SECRET;
-  private readonly refreshJwtSecret = process.env.REFRESH_SECRET;
-  private readonly accessToketTtl = process.env.ACCESS_TTL;
-  private readonly refreshTokenTtl = process.env.REFRESH_TTL;
+  private readonly accessJwtSecret = 'Some secret' || process.env.ACCESS_SECRET;
+  private readonly refreshJwtSecret =
+    'Some secret' || process.env.REFRESH_SECRET;
+  private readonly accessToketTtl = '10000' || process.env.ACCESS_TTL;
+  private readonly refreshTokenTtl = '10000' || process.env.REFRESH_TTL;
 
   constructor(
     @InjectRepository(User)
