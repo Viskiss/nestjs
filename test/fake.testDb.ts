@@ -1,45 +1,34 @@
-import User from 'src/db/entities/user.entity';
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/ban-types */
+import { Repository } from 'typeorm';
 
-const users = [
-  {
-    id: 1,
-    email: '1@mail.ru',
-    password: '$2a$10$ujcELjzFJuKQdZ8ad6rdxus32l4SUqU21oBqgbTSeMTCARmOuNeEe',
-    fullName: null,
-    avatar: null,
-  },
-  {
-    id: 2,
-    email: '2@mail.ru',
-    password: '$2a$10$ujcELjzFJuKQdZ8ad6rdxus32l4SUqU21oBqgbTSeMTCARmOuNeEe',
-    fullName: null,
-    avatar: null,
-  },
-  {
-    id: 3,
-    email: '3@mail.ru',
-    password: '$2a$10$ujcELjzFJuKQdZ8ad6rdxus32l4SUqU21oBqgbTSeMTCARmOuNeEe',
-    fullName: null,
-    avatar: null,
-  },
-];
+export type MockType<T> = {
+  [P in keyof T]: jest.Mock<{}>;
+};
+//@ts-ignore
+export const repositoryMockFactory: () => MockType<Repository<any>> = jest.fn(
+  () => ({
+    find: jest.fn((entity) => entity),
+    findOne: jest.fn((entity) => entity),
+    findOneBy: jest.fn((entity) => entity),
+    findAndCount: jest.fn((entity) => entity),
+    create: jest.fn((entity) => entity),
+    save: jest.fn((entity) => entity),
+    update: jest.fn((entity) => entity),
+    delete: jest.fn((entity) => entity),
+    createQueryBuilder: jest.fn(() => ({
+      addSelect: jest.fn().mockReturnThis(),
+      where: jest.fn().mockReturnThis(),
+      getOne: jest.fn().mockReturnThis(),
+    })),
+    compare: jest.fn((entity) => entity),
+  }),
+);
 
-/* eslint-disable @typescript-eslint/no-empty-function */
-export class UserRepositoryFake {
-  public delete(): Promise<boolean> {
-    return;
-  }
-  public async save(): Promise<void> {}
-  public async find(): Promise<User[]> {
-    return users as User[];
-  }
-  public async findOneBy(): Promise<User> {
-    return {
-      id: 1,
-      email: '1@mail.ru',
-      password: '$2a$10$ujcELjzFJuKQdZ8ad6rdxus32l4SUqU21oBqgbTSeMTCARmOuNeEe',
-      fullName: null,
-      avatar: null,
-    };
-  }
-}
+export const fakeUser = {
+  id: 1,
+  email: '1@mail.ru',
+  password: '$2a$10$ujcELjzFJuKQdZ8ad6rdxus32l4SUqU21oBqgbTSeMTCARmOuNeEe',
+  fullName: null,
+  avatar: null,
+};
