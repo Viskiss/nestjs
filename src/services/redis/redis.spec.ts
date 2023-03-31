@@ -32,8 +32,6 @@ describe('redis test', () => {
     const test_One = await redisService.get('some string');
     const test_Two = await redisService.get('1');
 
-    console.log(test_One);
-
     expect(await test_One).not.toBe('');
     expect(await test_Two).toBeUndefined();
   });

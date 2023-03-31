@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/ban-types */
+import User from '../src/db/entities/user.entity';
 import { Repository } from 'typeorm';
 
 export type MockType<T> = {
@@ -19,9 +20,8 @@ export const repositoryMockFactory: () => MockType<Repository<any>> = jest.fn(
     createQueryBuilder: jest.fn(() => ({
       addSelect: jest.fn().mockReturnThis(),
       where: jest.fn().mockReturnThis(),
-      getOne: jest.fn().mockReturnThis(),
+      getOne: jest.fn().mockReturnValue({} as User),
     })),
-    compare: jest.fn((entity) => entity),
   }),
 );
 

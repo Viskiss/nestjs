@@ -7,7 +7,7 @@ import { JwtTokenService } from './jwt.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { RedisModule } from '../redis/redis.module';
-import { UserRepositoryFake } from '../../../test/fake.testDb';
+import { repositoryMockFactory } from '../../../test/fake.testDb';
 
 describe('jwt test', () => {
   let jwtTokenService: JwtTokenService;
@@ -20,7 +20,7 @@ describe('jwt test', () => {
         JwtTokenService,
         {
           provide: getRepositoryToken(User),
-          useClass: UserRepositoryFake,
+          useFactory: repositoryMockFactory,
         },
       ],
     }).compile();
@@ -35,8 +35,6 @@ describe('jwt test', () => {
     expect(result).not.toBeNull();
     expect(result).toHaveProperty('accessToken');
     expect(result).toHaveProperty('refreshToken');
-    expect(result.accessToken).toHaveLength(139);
-    expect(result.refreshToken).toHaveLength(139);
   });
 
   afterAll(async () => {

@@ -1,23 +1,25 @@
-import { fakeUser, repositoryMockFactory } from '../../../test/fake.testDb';
+import { fakeUser, repositoryMockFactory } from '../../../../test/fake.testDb';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import User from '../../db/entities/user.entity';
-import { UsersService } from './users.service';
-import { BcryptModule } from '../../services/bcrypt/bcrypt.module';
+import User from '../../../db/entities/user.entity';
+import { UsersService } from '../users.service';
+import { BcryptModule } from '../../../services/bcrypt/bcrypt.module';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BadRequestException } from '@nestjs/common';
+import { BcryptService } from '../../../services/bcrypt/bcrypt.service';
 
 describe('UsersService test', () => {
   let usersService: UsersService;
   let userRepository: Repository<User>;
-  // let bctyptService: BcryptService;
+  let bctyptService: BcryptService;
   let module: TestingModule;
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
       imports: [BcryptModule],
       providers: [
+        BcryptService,
         UsersService,
         {
           provide: getRepositoryToken(User),
@@ -25,10 +27,11 @@ describe('UsersService test', () => {
         },
       ],
     }).compile();
-    await module.init();
 
     usersService = module.get<UsersService>(UsersService);
+    bctyptService = module.get<BcryptService>(UsersService);
     userRepository = module.get(getRepositoryToken(User));
+    await module.init();
   });
 
   it('Return array of users', async () => {
@@ -70,25 +73,11 @@ describe('UsersService test', () => {
     expect(test_Two).not.toEqual(fakeUser2);
   });
 
-  // it('Return user by email', async () => {
-  //   const email = 'email';
+  it('Return user by email', async () => {
+    const task_One = await usersService.findUserByEmail('email');
 
-  //   jest
-  //     .spyOn(userRepository, 'createQueryBuilder')
-  //     .mockImplementation(() => User);
-
-  //   const task_One = await usersService.findUserByEmail(email);
-
-  //   expect(task_One).toEqual(User);
-
-  //   expect(task_One).toEqual(
-  //     userRepository
-  //       .createQueryBuilder('user')
-  //       .addSelect('user.password')
-  //       .where('user.email = :email', { email })
-  //       .getOne(),
-  //   );
-  // });
+    expect(task_One).toStrictEqual({} as User);
+  });
 
   it('Return number after deleting user', async () => {
     const test_One = await usersService.deleteUser(1);
@@ -189,17 +178,15 @@ describe('UsersService test', () => {
       new BadRequestException('Password and new password must be different'),
     );
 
-    // fix bcrypt compare error
+    jest.fn(bctyptService.compare).mockImplementation(async () => false);
 
-    // jest.fn(bctyptService.compare).mockImplementation(async () => false);
-
-    // expect(
-    //   async () =>
-    //     await usersService.updateUserPassword(
-    //       { newPassword: '11111', password: '2222' },
-    //       1,
-    //     ),
-    // ).rejects.toThrow(new BadRequestException('Your password is invalid'));
+    expect(
+      async () =>
+        await usersService.updateUserPassword(
+          { newPassword: '11111', password: '2222' },
+          1,
+        ),
+    ).rejects.toThrow(new BadRequestException('Your password is invalid'));
   });
 
   afterAll(async () => {
