@@ -11,6 +11,7 @@ import {
   Patch,
   UseGuards,
   UseInterceptors,
+  ValidationPipe,
 } from '@nestjs/common';
 
 import { AccessGuard } from '../../common/authGuard/jwt.guards';
@@ -50,7 +51,7 @@ export default class UsersController {
   @Patch(':id')
   updateUser(
     @Param('id', ParseIntPipe) id: number,
-    @Body() data: UpdateUserDto,
+    @Body(new ValidationPipe()) data: UpdateUserDto,
   ) {
     return this.commandBus.execute(new UpdateUserCommand(id, data));
   }
@@ -59,7 +60,7 @@ export default class UsersController {
   @Patch('password/:id')
   updateUserPassword(
     @Param('id', ParseIntPipe) id: number,
-    @Body() data: UpdateUserPasswordDto,
+    @Body(new ValidationPipe()) data: UpdateUserPasswordDto,
   ) {
     return this.commandBus.execute(new UpdateUserPasswordCommand(id, data));
   }
@@ -68,7 +69,7 @@ export default class UsersController {
   @Patch('avatar/:id')
   async updateUserAvatar(
     @Param('id', ParseIntPipe) id: number,
-    @Body() data: UpdateUserAvatarDto,
+    @Body(new ValidationPipe()) data: UpdateUserAvatarDto,
   ) {
     await this.commandBus.execute(new UpdateUserAvatarCommand(id, data));
     throw new HttpException(

@@ -1,4 +1,4 @@
-import { CreateUserDto } from './auth.dto';
+import { CreateUserDto, RefreshTokenDto } from './auth.dto';
 import {
   Controller,
   Post,
@@ -6,6 +6,7 @@ import {
   UseGuards,
   UseInterceptors,
   ClassSerializerInterceptor,
+  ValidationPipe,
 } from '@nestjs/common';
 
 import { SignInUserDto } from './auth.dto';
@@ -24,18 +25,18 @@ export default class AuthController {
   constructor(private commandBus: CommandBus) {}
 
   @Post('/sign-in')
-  async signIn(@Body() body: SignInUserDto) {
+  async signIn(@Body(new ValidationPipe()) body: SignInUserDto) {
     return this.commandBus.execute(new SignInCommand(body));
   }
 
   @Post('/sign-up')
-  async signUp(@Body() body: CreateUserDto) {
+  async signUp(@Body(new ValidationPipe()) body: CreateUserDto) {
     return this.commandBus.execute(new SignUpCommand(body));
   }
 
   @UseGuards(RefreshGuard)
   @Post('/refresh')
-  async refresh(@Body() body: { token: string }) {
+  async refresh(@Body(new ValidationPipe()) body: RefreshTokenDto) {
     return this.commandBus.execute(new RefreshTokenCommand(body.token));
   }
 }

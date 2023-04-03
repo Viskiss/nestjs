@@ -10,7 +10,6 @@ export class BcryptService {
     try {
       return bcrypt.compareSync(reqPassword, dbPassword);
     } catch (error) {
-      this.logger.error(error);
       throw new BadRequestException(error);
     }
   }
@@ -19,7 +18,6 @@ export class BcryptService {
     try {
       return bcrypt.hashSync(password, this.saltRounds);
     } catch (error) {
-      this.logger.error(error);
       throw new BadRequestException(error);
     }
   }

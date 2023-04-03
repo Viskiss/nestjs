@@ -18,7 +18,7 @@ export class GetAllUsersHandler implements ICommandHandler<GetAllUsersCommand> {
 
     if (!allUsers) {
       throw new BadRequestException({
-        message: 'Unable get all posts',
+        message: 'Unable get all users',
       });
     }
     return allUsers;

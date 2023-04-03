@@ -1,7 +1,14 @@
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import {
+  BadRequestException,
+  CacheModule,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
+import { RedisClientOptions } from 'redis';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { RedisService } from '../../../services/redis/redis.service';
 import { BcryptService } from '../../../services/bcrypt/bcrypt.service';
@@ -13,24 +20,13 @@ import {
   JwtAccessStrategy,
   JwtRefreshStrategy,
 } from '../../../common/authGuard';
-import {
-  BadRequestException,
-  CacheModule,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
-import { RedisClientOptions } from 'redis';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AuthModule } from '../auth.module';
 
 describe('authService test', () => {
   let authService: AuthService;
   let usersService: UsersService;
   let jwtService: JwtService;
   let redisService: RedisService;
-  let bcryptService: BcryptService;
   let module: TestingModule;
-  let userRepository: Repository<User>;
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
@@ -67,9 +63,7 @@ describe('authService test', () => {
       .compile();
 
     usersService = module.get<UsersService>(UsersService);
-    userRepository = module.get(getRepositoryToken(User));
     authService = module.get(AuthService);
-    bcryptService = module.get(BcryptService);
     jwtService = module.get(JwtService);
     redisService = module.get(RedisService);
     await module.init();
@@ -125,6 +119,7 @@ describe('authService test', () => {
   });
 
   it('Return error (user) / sign-in', async () => {
+    jest.spyOn(usersService, 'findUserByEmail').mockResolvedValue(undefined);
     const test = authService.signIn({
       email: '1@mail.ru',
       password: '11111',
@@ -133,69 +128,75 @@ describe('authService test', () => {
     expect(test).rejects.toThrow(new NotFoundException('User not found'));
   });
 
-  // it('Return error (password) / sign-in', async () => {
-  //   jest.spyOn(usersService, 'findUserByEmail').mockResolvedValue(fakeUser);
+  it('Return error (password) / sign-in', async () => {
+    jest.spyOn(usersService, 'findUserByEmail').mockResolvedValue(fakeUser);
 
-  //   const test = authService.signIn({
-  //     email: '1@mail.ru',
-  //     password: '',
-  //   });
+    const test = authService.signIn({
+      email: '1@mail.ru',
+      password: '',
+    });
 
-  //   expect(test).rejects.toThrow(
-  //     new BadRequestException('Password is invalid'),
-  //   );
-  // });
+    expect(test).rejects.toThrow(
+      new BadRequestException('Password is invalid'),
+    );
+  });
 
-  // it('Return user after auth / sign-in', async () => {
-  //   jest.spyOn(usersService, 'findUserByEmail').mockResolvedValue(fakeUser);
+  it('Return user after auth / sign-in', async () => {
+    jest.spyOn(usersService, 'findUserByEmail').mockResolvedValue(fakeUser);
+    jest.spyOn(authService, 'generateTokens').mockResolvedValue({
+      accessToken: 'some token',
+      refreshToken: 'some token',
+    });
 
-  //   const test = await authService.signIn({
-  //     email: '1@mail.ru',
-  //     password: '11111',
-  //   });
+    const test = await authService.signIn({
+      email: '1@mail.ru',
+      password: '11111',
+    });
 
-  //   expect(test).toStrictEqual({
-  //     user: fakeUser,
-  //     tokens: { accessToken: '', refreshToken: '' },
-  //   });
-  // });
+    expect(test).toStrictEqual({
+      user: fakeUser,
+      tokens: { accessToken: 'some token', refreshToken: 'some token' },
+    });
+  });
 
-  // it('Return error (token) / refresh', async () => {
-  //   jest.spyOn(jwtService, 'verify').mockResolvedValue('other token' as never);
+  it('Return error (token) / refresh', async () => {
+    jest.spyOn(jwtService, 'verify').mockResolvedValue('other token' as never);
 
-  //   const test = authService.refresh('some refresh token');
+    const test = authService.refresh('some refresh token');
 
-  //   expect(test).rejects.toThrow(
-  //     new BadRequestException('Refresh token is invalid'),
-  //   );
-  // });
+    expect(test).rejects.toThrow(
+      new BadRequestException('Refresh token is invalid'),
+    );
+  });
 
-  // it('Return error (token) / refresh', async () => {
-  //   jest.spyOn(redisService, 'get').mockResolvedValue('some refresh token');
-  //   jest.spyOn(usersService, 'findUserById').mockResolvedValue(undefined);
+  it('Return error (token) / refresh', async () => {
+    jest.spyOn(jwtService, 'verify').mockResolvedValue('other token' as never);
+    jest.spyOn(redisService, 'get').mockResolvedValue('some refresh token');
+    jest.spyOn(usersService, 'findUserById').mockResolvedValue(undefined);
 
-  //   const test = authService.refresh('some refresh token');
+    const test = authService.refresh('some refresh token');
 
-  //   expect(test).rejects.toThrow(
-  //     new NotFoundException('Refresh token is invalid'),
-  //   );
-  // });
+    expect(test).rejects.toThrow(
+      new NotFoundException('Refresh token is invalid'),
+    );
+  });
 
-  // it('Return tokens / refresh', async () => {
-  //   jest.spyOn(redisService, 'get').mockResolvedValue('some refresh token');
-  //   jest.spyOn(usersService, 'findUserById').mockResolvedValue(fakeUser);
+  it('Return tokens / refresh', async () => {
+    jest.spyOn(jwtService, 'verify').mockResolvedValue('other token' as never);
+    jest.spyOn(redisService, 'get').mockResolvedValue('some refresh token');
+    jest.spyOn(usersService, 'findUserById').mockResolvedValue(fakeUser);
+    jest.spyOn(authService, 'generateTokens').mockResolvedValue({
+      accessToken: 'some token',
+      refreshToken: 'some token',
+    });
 
-  //   const test = await authService.refresh('some refresh token');
+    const test = await authService.refresh('some refresh token');
 
-  //   expect(test).toStrictEqual({ accessToken: '', refreshToken: '' });
-  // });
-
-  // it('Return tokens / geterate tokens', async () => {
-  //   jest.spyOn(usersService, 'findUserByEmail').mockRejectedValue(undefined);
-  //   const test = await authService.generateTokens('email');
-
-  //   expect(test).toThrow(new NotFoundException('User not found'));
-  // });
+    expect(test).toStrictEqual({
+      accessToken: 'some token',
+      refreshToken: 'some token',
+    });
+  });
 
   afterEach(() => {
     jest.resetAllMocks();

@@ -21,6 +21,9 @@ export class CreateUserDto {
 
   @IsString()
   @IsOptional()
+  @MinLength(5, {
+    message: 'Email is too short',
+  })
   fullName: string;
 
   @IsString()

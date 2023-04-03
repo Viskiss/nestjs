@@ -1,11 +1,13 @@
-import { Test } from '@nestjs/testing';
+import { BadRequestException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 import { BcryptService } from './bcrypt.service';
 
 describe('bcrypt test', () => {
   let bcryptService: BcryptService;
+  let module: TestingModule;
 
   beforeEach(async () => {
-    const module = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       providers: [BcryptService],
     }).compile();
     bcryptService = module.get<BcryptService>(BcryptService);
@@ -26,10 +28,34 @@ describe('bcrypt test', () => {
   });
 
   it('Return string result before hash password', async () => {
-    // const bcryptService = new BcryptService();
-
     const hash = await bcryptService.hash('11111');
 
     expect(hash).toMatch(/[s0/\/\P4$$w0rD]/);
+  });
+
+  it('Return error compare', async () => {
+    try {
+      jest
+        .spyOn(bcryptService, 'compare')
+        .mockRejectedValue(new BadRequestException('Bad Request'));
+      await bcryptService.compare('', '');
+    } catch (error) {
+      expect(error.message).toBe('Bad Request');
+    }
+  });
+
+  it('Return error hash', async () => {
+    try {
+      jest
+        .spyOn(bcryptService, 'compare')
+        .mockRejectedValue(new BadRequestException('Bad Request'));
+      await bcryptService.hash('');
+    } catch (error) {
+      expect(error.message).toBe('Bad Request');
+    }
+  });
+
+  afterAll(async () => {
+    await module.close();
   });
 });
