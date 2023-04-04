@@ -4,6 +4,7 @@ import { CommandBus } from '@nestjs/cqrs';
 import { Test } from '@nestjs/testing';
 
 import { RefreshGuard } from '../../../common/authGuard';
+
 import AuthController from '../auth.controller';
 
 describe('userCQRSController test', () => {

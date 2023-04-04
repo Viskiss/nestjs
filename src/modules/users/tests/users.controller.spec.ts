@@ -1,20 +1,21 @@
 import * as request from 'supertest';
 import { Test } from '@nestjs/testing';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { ExecutionContext, INestApplication } from '@nestjs/common';
 
 import { UsersService } from '../users.service';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import User from '../../../db/entities/user.entity';
-import { fakeUser, repositoryMockFactory } from '../../../../test/fake.testDb';
-import { UsersController } from '../users.controller';
 import { BcryptService } from '../../../services/bcrypt/bcrypt.service';
-import { AccessGuard } from '../../../common/authGuard';
-import { Repository } from 'typeorm';
 
-describe('Cats', () => {
+import { UsersController } from '../users.controller';
+
+import { AccessGuard } from '../../../common/authGuard';
+
+import User from '../../../db/entities/user.entity';
+
+import { repositoryMockFactory } from '../../../../test/fake.testDb';
+
+describe('Users controller', () => {
   let app: INestApplication;
-  let usersService: UsersService;
-  let userRepository: Repository<User>;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -39,78 +40,125 @@ describe('Cats', () => {
       .compile();
 
     app = module.createNestApplication();
-    usersService = module.get(UsersService);
-    userRepository = module.get(getRepositoryToken(User));
     await app.init();
   });
 
-  it(`/GET all users`, async () => {
-    jest
-      .spyOn(usersService, 'findAllUsers')
-      .mockImplementation(async () => [] as User[]);
-
-    request(app.getHttpServer())
+  it('Return users / get users', async () => {
+    const test = await request(app.getHttpServer())
       .get('/users/getAll')
-      .expect(200)
-      .expect(await usersService.findAllUsers());
+      .expect(200);
+
+    expect(test.clientError).toBeFalsy();
   });
 
-  it(`/GET user by id`, async () => {
-    jest
-      .spyOn(usersService, 'findUserById')
-      .mockImplementation(async () => fakeUser);
+  it('Return user (error) / get user', async () => {
+    const test = await request(app.getHttpServer()).get('/users/q').expect(400);
 
-    request(app.getHttpServer())
-      .get('/users/1')
-      .expect(200)
-      .expect(await usersService.findUserById(1));
+    expect(
+      test.text.includes(
+        '"message":"Validation failed (numeric string is expected)"',
+      ),
+    ).toBeTruthy();
   });
 
-  it(`/PATCH update user`, async () => {
-    request(app.getHttpServer())
+  it('Return user / get user', async () => {
+    const test = await request(app.getHttpServer()).get('/users/1').expect(200);
+
+    expect(test.clientError).toBeFalsy();
+  });
+
+  it('Return user after update (error) / update user', async () => {
+    const test = await request(app.getHttpServer())
       .patch('/users/1')
-      .expect(200)
-      .expect(
-        await usersService.updateUser(
-          {
-            email: 'qwerty',
-            fullName: 'qwerty',
-          },
-          1,
-        ),
-      );
+      .send({ email: '', fullName: '' })
+      .expect(400);
+
+    expect(
+      test.text.includes(
+        '"message":["email must be an email","Email is too short","Full name is too short"]',
+      ),
+    ).toBeTruthy();
   });
 
-  it(`/PATCH update password user`, async () => {
-    jest.spyOn(userRepository, 'findOneBy').mockResolvedValue(fakeUser);
-    jest.spyOn(usersService, 'findUserByEmail').mockResolvedValue(fakeUser);
+  it('Return user after update (error) / update user', async () => {
+    const test = await request(app.getHttpServer())
+      .patch('/users/1')
+      .send({ e: 'q' })
+      .expect(400);
 
-    request(app.getHttpServer())
+    expect(test.text.includes('"message":"Nothing to update"')).toBeTruthy();
+  });
+
+  it('Return user after update / update user user', async () => {
+    const test = await request(app.getHttpServer())
+      .patch('/users/1')
+      .send({ email: 'qwerty@mail.ru' })
+      .expect(200);
+
+    expect(test.clientError).toBeFalsy();
+  });
+
+  it('Return user after update password (error) / update user password', async () => {
+    const test = await request(app.getHttpServer())
       .patch('/users/password/1')
-      .expect(200)
-      .expect(
-        await usersService.updateUserPassword(
-          {
-            password: '11111',
-            newPassword: '2222',
-          },
-          1,
-        ),
-      );
+      .send({ password: '' })
+      .expect(400);
+
+    expect(
+      test.text.includes(
+        '"message":["Password length min 5, max 20","New password name is too long","New password name is too short"]',
+      ),
+    ).toBeTruthy();
   });
 
-  it(`/PATCH update avatar user`, async () => {
-    request(app.getHttpServer())
-      .patch('/users/avatar/1')
-      .expect(200)
-      .expect(await usersService.uploadUserAvatar(1, { avatar: '' }));
+  it('Return user after update password / update user password', async () => {
+    const test = await request(app.getHttpServer())
+      .patch('/users/password/1')
+      .send({ password: '12345', newPassword: '22222' })
+      .expect(500);
+
+    expect(test.clientError).toBeFalsy();
+    expect(test.serverError).toBeTruthy();
   });
 
-  it(`/DELETE user`, async () => {
-    request(app.getHttpServer())
+  it('Return user after update avatar (error) / update user avatar', async () => {
+    const test = await request(app.getHttpServer())
       .patch('/users/avatar/1')
-      .expect(200)
-      .expect(await usersService.deleteUser(1));
+      .send({ avatar: '' })
+      .expect(400);
+
+    expect(
+      test.text.includes('"message":["Avatar data too short"]'),
+    ).toBeTruthy();
+  });
+
+  it('Return user after update avatar / update user avatar', async () => {
+    const test = await request(app.getHttpServer())
+      .patch('/users/avatar/1')
+      .send({ avatar: 'some avatar data' })
+      .expect(200);
+
+    expect(test.clientError).toBeFalsy();
+  });
+
+  it('Return true after delete user (error) / delete user', async () => {
+    const test = await request(app.getHttpServer())
+      .delete('/users/delete/q')
+      .expect(400);
+
+    expect(
+      test.text.includes(
+        '"message":"Validation failed (numeric string is expected)"',
+      ),
+    ).toBeTruthy();
+  });
+
+  it('Return true after delete user (error) / delete user', async () => {
+    const test = await request(app.getHttpServer())
+      .delete('/users/delete/1')
+      .expect(200);
+
+    expect(test.clientError).toBeFalsy();
   });
 
   afterAll(async () => {

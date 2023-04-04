@@ -1,18 +1,21 @@
-import { fakeUser, repositoryMockFactory } from '../../../../test/fake.testDb';
+import {
+  fakeUser,
+  fakeUser2,
+  repositoryMockFactory,
+} from '../../../../test/fake.testDb';
 import { Test, TestingModule } from '@nestjs/testing';
-
-import User from '../../../db/entities/user.entity';
-import { UsersService } from '../users.service';
-import { BcryptModule } from '../../../services/bcrypt/bcrypt.module';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { BadRequestException } from '@nestjs/common';
+
+import { UsersService } from '../users.service';
+
+import { BcryptModule } from '../../../services/bcrypt/bcrypt.module';
 import { BcryptService } from '../../../services/bcrypt/bcrypt.service';
 
-describe('UsersService test', () => {
+import User from '../../../db/entities/user.entity';
+
+describe('Users service test', () => {
   let usersService: UsersService;
-  let userRepository: Repository<User>;
-  let bctyptService: BcryptService;
+  let userRepository;
   let module: TestingModule;
 
   beforeAll(async () => {
@@ -28,8 +31,7 @@ describe('UsersService test', () => {
       ],
     }).compile();
 
-    usersService = module.get<UsersService>(UsersService);
-    bctyptService = module.get<BcryptService>(UsersService);
+    usersService = module.get(UsersService);
     userRepository = module.get(getRepositoryToken(User));
     await module.init();
   });
@@ -37,124 +39,127 @@ describe('UsersService test', () => {
   it('Return array of users', async () => {
     jest.spyOn(userRepository, 'find').mockImplementation(async () => []);
 
-    const findAllUsers = await usersService.findAllUsers();
+    const test = await usersService.findAllUsers();
 
-    expect(findAllUsers).toStrictEqual([] as User[]);
-    expect(findAllUsers).toBeInstanceOf(Array as unknown as User[]);
+    expect(test).toStrictEqual([] as User[]);
+    expect(test).toBeInstanceOf(Array as unknown as User[]);
+  });
+
+  it('Return array of users (error)', async () => {
+    jest.spyOn(userRepository, 'find').mockImplementation(() => {
+      throw new TypeError();
+    });
+
+    const test = usersService.findAllUsers();
+
+    expect(test).rejects.toThrow('INTERNAL_SERVER_ERROR');
   });
 
   it('Return user by id', async () => {
-    const fakeUser1 = {
-      id: 1,
-      email: '1@mail.ru',
-      password: '$2a$10$ujcELjzFJuKQdZ8ad6rdxus32l4SUqU21oBqgbTSeMTCARmOuNeEe',
-      fullName: null,
-      avatar: null,
-    };
-    const fakeUser2 = {
-      id: 2,
-      email: '1@mail.ru',
-      password: '$2a$10$ujcELjzFJuKQdZ8ad6rdxus32l4SUqU21oBqgbTSeMTCARmOuNeEe',
-      fullName: null,
-      avatar: null,
-    };
-
     jest
       .spyOn(userRepository, 'findOneBy')
-      .mockImplementation(async () => fakeUser1);
+      .mockImplementation(async () => fakeUser);
 
-    const test_One = await usersService.findUserById(1);
-    const test_Two = await usersService.findUserById(2);
+    const test = await usersService.findUserById(1);
 
-    jest.spyOn(userRepository, 'findOneBy').mockResolvedValue({} as User);
+    expect(test).not.toBeUndefined();
+    expect(test).toEqual(fakeUser);
+  });
 
-    expect(test_One).not.toBeUndefined();
-    expect(test_One).toEqual(fakeUser1);
-    expect(test_Two).not.toEqual(fakeUser2);
+  it('Return user by id (error)', async () => {
+    jest.spyOn(userRepository, 'findOneBy').mockImplementation(() => {
+      throw new TypeError();
+    });
+
+    const test = usersService.findUserById(1);
+
+    expect(test).rejects.toThrow('INTERNAL_SERVER_ERROR');
   });
 
   it('Return user by email', async () => {
-    const task_One = await usersService.findUserByEmail('email');
+    jest.spyOn(userRepository, 'createQueryBuilder').mockImplementation(() => ({
+      addSelect: jest.fn().mockReturnThis(),
+      where: jest.fn().mockReturnThis(),
+      getOne: jest.fn().mockResolvedValue(fakeUser),
+    }));
 
-    expect(task_One).toStrictEqual({} as User);
+    const test = await usersService.findUserByEmail('email');
+
+    expect(test).toStrictEqual(fakeUser);
+  });
+
+  it('Return number after deleting user (error)', async () => {
+    jest.spyOn(userRepository, 'delete').mockResolvedValue({ affected: 0 });
+
+    const test = usersService.deleteUser(1);
+
+    expect(test).rejects.toThrow('Unable delete user');
   });
 
   it('Return number after deleting user', async () => {
-    const test_One = await usersService.deleteUser(1);
-    expect(test_One).toBeTruthy();
+    jest.spyOn(userRepository, 'delete').mockResolvedValue({ affected: 1 });
 
-    jest
-      .spyOn(userRepository, 'delete')
-      .mockResolvedValue({ affected: 0, raw: 0 });
+    const test = await usersService.deleteUser(1);
 
-    expect(
-      async () => await usersService.deleteUser('' as unknown as number),
-    ).rejects.toThrow(new BadRequestException('Unable delete user'));
+    expect(test).toBeTruthy();
   });
 
   it('Return user after creating', async () => {
-    const test_One = await usersService.createUser({
+    const test = await usersService.createUser({
       email: 'qwerty@mail.ru',
       fullName: 'qwerty',
       password: '11111',
     });
-
-    const test_Two = await usersService.createUser({
-      email: '',
-      fullName: '',
-      password: '11111',
-    });
-
-    expect(test_One).toEqual({ email: 'qwerty@mail.ru', fullName: 'qwerty' });
-    expect(test_One).toHaveProperty('email');
-    expect(test_One).toHaveProperty('fullName');
-    expect(test_One).not.toHaveProperty('password');
-    expect(test_One.fullName).toHaveLength(test_One.fullName.length);
-    expect(test_One.email).toHaveLength(test_One.email.length);
-
-    expect(test_Two).toHaveProperty('email');
-    expect(test_Two).toHaveProperty('fullName');
-    expect(test_Two).not.toEqual({
-      email: 'qwerty@mail.ru',
-      fullName: 'qwerty',
-    });
-    expect(test_Two.fullName).toHaveLength(test_Two.fullName.length);
-    expect(test_Two.email).toHaveLength(test_Two.email.length);
+    expect(test).toEqual({ email: 'qwerty@mail.ru', fullName: 'qwerty' });
+    expect(test).toHaveProperty('email');
+    expect(test).toHaveProperty('fullName');
+    expect(test).not.toHaveProperty('password');
+    expect(test.fullName).toHaveLength(test.fullName.length);
+    expect(test.email).toHaveLength(test.email.length);
   });
 
-  it('Return user after update data', async () => {
-    expect(
-      async () =>
-        await usersService.updateUser(
-          {
-            email: '',
-            fullName: '',
-          },
-          1,
-        ),
-    ).rejects.toThrow(new BadRequestException('Nothing to update'));
+  it('Return user after update data (error)', async () => {
+    const test = usersService.updateUser(
+      {
+        email: '',
+        fullName: '',
+      },
+      1,
+    );
 
-    jest.spyOn(userRepository, 'findOneBy').mockResolvedValue({
-      email: 'qwerty',
-      fullName: 'qwerty',
-      id: 1,
-      avatar: null,
-      password: '',
-    });
-
-    expect(
-      async () =>
-        await usersService.updateUser(
-          {
-            email: 'qwerty',
-            fullName: 'qwerty',
-          },
-          1,
-        ),
-    ).rejects.toThrow(new BadRequestException('Update needs a new value'));
+    expect(test).rejects.toThrow('Nothing to update');
   });
 
-  it('Return user afret updating password', async () => {
+  it('Return user after update data (error)', async () => {
+    jest.spyOn(userRepository, 'findOneBy').mockResolvedValue(fakeUser);
+
+    const test = usersService.updateUser(
+      {
+        email: '1@mail.ru',
+        fullName: null,
+      },
+      1,
+    );
+
+    expect(test).rejects.toThrow('Update needs a new value');
+  });
+
+  it('Return user after update data (error)', async () => {
+    jest.spyOn(userRepository, 'findOneBy').mockResolvedValue(fakeUser);
+
+    const test = await usersService.updateUser(
+      {
+        email: 'newEmail@mail',
+        fullName: 'name',
+      },
+      1,
+    );
+
+    expect(test.email).toBe('newEmail@mail');
+    expect(test.fullName).toBe('name');
+  });
+
+  it('Return user after updating password (error)', async () => {
     jest.spyOn(userRepository, 'findOneBy').mockResolvedValue(undefined);
 
     expect(
@@ -163,30 +168,77 @@ describe('UsersService test', () => {
           { newPassword: '', password: '' },
           1,
         ),
-    ).rejects.toThrow(new BadRequestException('User not found'));
+    ).rejects.toThrow('User not found');
+  });
 
+  it('Return user after updating password (error)', async () => {
     jest.spyOn(userRepository, 'findOneBy').mockResolvedValue(fakeUser);
-    jest.spyOn(usersService, 'findUserByEmail').mockResolvedValue(fakeUser);
+    jest.spyOn(userRepository, 'createQueryBuilder').mockImplementation(() => ({
+      addSelect: jest.fn().mockReturnThis(),
+      where: jest.fn().mockReturnThis(),
+      getOne: jest.fn().mockResolvedValue({
+        password:
+          '$2a$10$ujcELjzFJuKQdZ8ad6rdxus32l4SUqU21oBqgbTSeMTCARmOuNeEe',
+      } as User),
+    }));
 
-    expect(
-      async () =>
-        await usersService.updateUserPassword(
-          { newPassword: '11111', password: '11111' },
-          1,
-        ),
-    ).rejects.toThrow(
-      new BadRequestException('Password and new password must be different'),
+    const test = usersService.updateUserPassword(
+      { newPassword: '11111', password: '2222' },
+      1,
     );
 
-    jest.fn(bctyptService.compare).mockImplementation(async () => false);
+    expect(test).rejects.toThrow('Your password is invalid');
+  });
 
-    expect(
-      async () =>
-        await usersService.updateUserPassword(
-          { newPassword: '11111', password: '2222' },
-          1,
-        ),
-    ).rejects.toThrow(new BadRequestException('Your password is invalid'));
+  it('Return user after updating password (error)', async () => {
+    jest.spyOn(userRepository, 'findOneBy').mockResolvedValue(fakeUser);
+    jest.spyOn(userRepository, 'createQueryBuilder').mockImplementation(() => ({
+      addSelect: jest.fn().mockReturnThis(),
+      where: jest.fn().mockReturnThis(),
+      getOne: jest.fn().mockResolvedValue({
+        password:
+          '$2a$10$ujcELjzFJuKQdZ8ad6rdxus32l4SUqU21oBqgbTSeMTCARmOuNeEe',
+      } as User),
+    }));
+
+    const test = usersService.updateUserPassword(
+      { newPassword: '11111', password: '11111' },
+      1,
+    );
+
+    expect(test).rejects.toThrow('Password and new password must be different');
+  });
+
+  it('Return user after updating password', async () => {
+    jest.spyOn(userRepository, 'findOneBy').mockResolvedValue(fakeUser2);
+    jest.spyOn(userRepository, 'createQueryBuilder').mockImplementation(() => ({
+      addSelect: jest.fn().mockReturnThis(),
+      where: jest.fn().mockReturnThis(),
+      getOne: jest.fn().mockResolvedValue({
+        password:
+          '$2a$10$ujcELjzFJuKQdZ8ad6rdxus32l4SUqU21oBqgbTSeMTCARmOuNeEe',
+      } as User),
+    }));
+
+    const test = await usersService.updateUserPassword(
+      { newPassword: '2222', password: '11111' },
+      2,
+    );
+
+    expect(test.email).toBe(fakeUser2.email);
+  });
+
+  it('Return user after update data (error)', async () => {
+    jest.spyOn(userRepository, 'findOneBy').mockResolvedValue(undefined);
+    const test = usersService.uploadUserAvatar(1, {
+      avatar: 'some avatar data',
+    });
+
+    expect(test).rejects.toThrow('User not found');
+  });
+
+  afterEach(() => {
+    jest.resetAllMocks();
   });
 
   afterAll(async () => {

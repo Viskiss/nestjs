@@ -100,6 +100,17 @@ describe('userCQRSController test', () => {
     ).toBe(true);
   });
 
+  it('Return user after update / update user', async () => {
+    const test = await request(app.getHttpServer())
+      .patch('/users/1')
+      .send({
+        email: 'qwerty@mail.ru',
+      })
+      .expect(200);
+
+    expect(test.clientError).toBeFalsy();
+  });
+
   it('Return user after update (error) / update user password', async () => {
     const test = await request(app.getHttpServer())
       .patch('/users/password/1')
@@ -113,6 +124,15 @@ describe('userCQRSController test', () => {
     ).toBe(true);
   });
 
+  it('Return user after update (error) / update user password', async () => {
+    const test = await request(app.getHttpServer())
+      .patch('/users/password/1')
+      .send({ password: '11111', newPassword: '22222' })
+      .expect(200);
+
+    expect(test.clientError).toBeFalsy();
+  });
+
   it('Return true after update (error) / update user avatar', async () => {
     const test = await request(app.getHttpServer())
       .patch('/users/avatar/1')
@@ -122,6 +142,15 @@ describe('userCQRSController test', () => {
     expect(test.text.includes('"message":["Avatar data too short"]')).toBe(
       true,
     );
+  });
+
+  it('Return true after update / update user avatar', async () => {
+    const test = await request(app.getHttpServer())
+      .patch('/users/avatar/1')
+      .send({ avatar: 'some avatar data' })
+      .expect(200);
+
+    expect(test.clientError).toBeFalsy();
   });
 
   it('Return true after deleting user (error) / delete user', async () => {
@@ -135,6 +164,15 @@ describe('userCQRSController test', () => {
         '"message":"Validation failed (numeric string is expected)"',
       ),
     ).toBe(true);
+  });
+
+  it('Return true after deleting user (error) / delete user', async () => {
+    const test = await request(app.getHttpServer())
+      .delete('/users/delete/1')
+      .send({})
+      .expect(200);
+
+    expect(test.clientError).toBeFalsy();
   });
 
   afterAll(async () => {

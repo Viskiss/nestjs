@@ -10,6 +10,7 @@ import {
   Post,
   UseGuards,
   UseInterceptors,
+  ValidationPipe,
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { AccessGuard } from '../../common/authGuard';
@@ -41,7 +42,7 @@ export default class CommentsController {
   @Post(':id')
   @UseGuards(AccessGuard)
   async createComment(
-    @Body() data: CreateCommentDto,
+    @Body(new ValidationPipe()) data: CreateCommentDto,
     @Param('id', ParseIntPipe) id: number,
   ) {
     return this.commandBus.execute(new CreateCommentCommand(data, id));
@@ -50,7 +51,7 @@ export default class CommentsController {
   @Patch(':id')
   @UseGuards(AccessGuard)
   async updateComment(
-    @Body() data: UpdateCommentDto,
+    @Body(new ValidationPipe()) data: UpdateCommentDto,
     @Param('id', ParseIntPipe) id: number,
   ) {
     return this.commandBus.execute(new UpdateCommentCommand(data, id));
@@ -59,7 +60,7 @@ export default class CommentsController {
   @Delete(':id')
   @UseGuards(AccessGuard)
   async deleteComment(
-    @Body() data: DeleteCommentDto,
+    @Body(new ValidationPipe()) data: DeleteCommentDto,
     @Param('id', ParseIntPipe) id: number,
   ) {
     return this.commandBus.execute(new DeleteCommentCommand(data, id));

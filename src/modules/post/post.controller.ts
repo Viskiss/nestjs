@@ -10,6 +10,7 @@ import {
   Post,
   UseGuards,
   UseInterceptors,
+  ValidationPipe,
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 
@@ -37,7 +38,7 @@ export default class PostsController {
   @Post(':id')
   @UseGuards(AccessGuard)
   async createPost(
-    @Body() body: CreatePostDto,
+    @Body(new ValidationPipe()) body: CreatePostDto,
     @Param('id', ParseIntPipe) id: number,
   ) {
     return this.commandBus.execute(new CreatePostCommand(body.text, id));
@@ -46,7 +47,7 @@ export default class PostsController {
   @Patch(':id')
   @UseGuards(AccessGuard)
   async updatePost(
-    @Body() body: UpdatePostDto,
+    @Body(new ValidationPipe()) body: UpdatePostDto,
     @Param('id', ParseIntPipe) id: number,
   ) {
     return this.commandBus.execute(new UpdatePostCommand(body, id));
@@ -55,7 +56,7 @@ export default class PostsController {
   @Delete(':id')
   @UseGuards(AccessGuard)
   async deletePost(
-    @Body() body: DeletePostDto,
+    @Body(new ValidationPipe()) body: DeletePostDto,
     @Param('id', ParseIntPipe) id: number,
   ) {
     return this.commandBus.execute(new DeletePostCommand(body.postId, id));

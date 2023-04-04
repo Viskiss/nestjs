@@ -9,6 +9,7 @@ import {
 import { AuthService } from '../auth.service';
 
 import { AuthController } from '../auth.controller';
+
 import { RefreshGuard } from '../../../common/authGuard';
 
 describe('authService test', () => {
@@ -88,6 +89,18 @@ describe('authService test', () => {
     );
   });
 
+  it(`/POST sign-in`, async () => {
+    const test = await request(app.getHttpServer())
+      .post('/auth/sign-in')
+      .send({
+        email: 'qwerty@mail.ru',
+        password: '11111',
+      })
+      .expect(201);
+
+    expect(test.clientError).toBeFalsy();
+  });
+
   it(`/POST error sign-up`, async () => {
     const test = await request(app.getHttpServer())
       .post('/auth/sign-up')
@@ -103,6 +116,18 @@ describe('authService test', () => {
         '"message":["Email is too short","email must be an email","Password length min 5, max 20"]',
       ),
     ).toBe(true);
+  });
+
+  it(`/POST sign-up`, async () => {
+    const test = await request(app.getHttpServer())
+      .post('/auth/sign-up')
+      .send({
+        email: 'qqwwwee@mail.ru',
+        password: '11111',
+      })
+      .expect(201);
+
+    expect(test.clientError).toBeFalsy();
   });
 
   it(`/POST error refresh`, async () => {

@@ -1,12 +1,15 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { JwtModule } from '@nestjs/jwt';
+import { JwtService } from '@nestjs/jwt';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import User from '../../db/entities/user.entity';
 import { JwtTokenService } from './jwt.service';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
-import { RedisModule } from '../redis/redis.module';
+import { RedisService } from '../redis/redis.service';
+
+import { JwtAccessStrategy, JwtRefreshStrategy } from '../../common/authGuard';
+
+import User from '../../db/entities/user.entity';
+
 import { repositoryMockFactory } from '../../../test/fake.testDb';
 
 describe('jwt test', () => {
@@ -15,16 +18,34 @@ describe('jwt test', () => {
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
-      imports: [ConfigModule, RedisModule, JwtModule.register({})],
       providers: [
+        JwtAccessStrategy,
+        JwtRefreshStrategy,
         JwtTokenService,
+        JwtService,
+        {
+          provide: RedisService,
+          useValue: {
+            set: () => {
+              return true;
+            },
+          },
+        },
         {
           provide: getRepositoryToken(User),
           useFactory: repositoryMockFactory,
         },
       ],
-    }).compile();
-    jwtTokenService = module.get<JwtTokenService>(JwtTokenService);
+    })
+      .overrideProvider(JwtAccessStrategy)
+      .useValue({ key: 'some key' })
+      .overrideProvider(JwtRefreshStrategy)
+      .useValue({ key: 'some key' })
+      .compile();
+
+    jwtTokenService = module.get(JwtTokenService);
+
+    await module.init();
   });
 
   it('Return Return pair of tokens', async () => {

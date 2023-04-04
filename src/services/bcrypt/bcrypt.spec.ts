@@ -1,6 +1,7 @@
-import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BcryptService } from './bcrypt.service';
+import * as bcrypt from 'bcrypt';
+import { HttpException } from '@nestjs/common';
 
 describe('bcrypt test', () => {
   let bcryptService: BcryptService;
@@ -34,25 +35,23 @@ describe('bcrypt test', () => {
   });
 
   it('Return error compare', async () => {
-    try {
-      jest
-        .spyOn(bcryptService, 'compare')
-        .mockRejectedValue(new BadRequestException('Bad Request'));
-      await bcryptService.compare('', '');
-    } catch (error) {
-      expect(error.message).toBe('Bad Request');
-    }
+    jest.spyOn(bcrypt, 'compareSync').mockImplementation(() => {
+      throw new TypeError();
+    });
+
+    const test = bcryptService.compare('', '');
+
+    expect(test).rejects.toThrow('INTERNAL_SERVER_ERROR');
   });
 
   it('Return error hash', async () => {
-    try {
-      jest
-        .spyOn(bcryptService, 'compare')
-        .mockRejectedValue(new BadRequestException('Bad Request'));
-      await bcryptService.hash('');
-    } catch (error) {
-      expect(error.message).toBe('Bad Request');
-    }
+    jest.spyOn(bcrypt, 'hashSync').mockImplementation(() => {
+      throw new TypeError();
+    });
+
+    const test = bcryptService.hash('');
+
+    expect(test).rejects.toThrow('INTERNAL_SERVER_ERROR');
   });
 
   afterAll(async () => {

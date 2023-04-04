@@ -44,7 +44,7 @@ export class RefreshTokenHandler
 
     if (!user) {
       throw new NotFoundException({
-        message: 'Refresh token is invalid',
+        message: 'User not found',
       });
     }
 

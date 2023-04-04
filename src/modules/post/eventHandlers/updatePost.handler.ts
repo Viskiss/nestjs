@@ -17,6 +17,7 @@ export class UpdatePostHandler implements ICommandHandler<UpdatePostCommand> {
 
   async execute(command: UpdatePostCommand) {
     const user = await this.userService.findUserById(command.author);
+
     const postToUpdate = await this.postRepository.findOneBy({
       id: command.body.postId,
     });
@@ -47,13 +48,8 @@ export class UpdatePostHandler implements ICommandHandler<UpdatePostCommand> {
 
     postToUpdate.text = command.body.text;
 
-    if (!postToUpdate) {
-      throw new BadRequestException({
-        message: 'Unable update post',
-      });
-    }
-
     await this.postRepository.save(postToUpdate);
+
     return postToUpdate;
   }
 }

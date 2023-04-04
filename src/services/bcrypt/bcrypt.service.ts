@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -10,7 +10,10 @@ export class BcryptService {
     try {
       return bcrypt.compareSync(reqPassword, dbPassword);
     } catch (error) {
-      throw new BadRequestException(error);
+      throw new HttpException(
+        'INTERNAL_SERVER_ERROR',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -18,7 +21,10 @@ export class BcryptService {
     try {
       return bcrypt.hashSync(password, this.saltRounds);
     } catch (error) {
-      throw new BadRequestException(error);
+      throw new HttpException(
+        'INTERNAL_SERVER_ERROR',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

@@ -4,8 +4,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
-  HttpStatus,
   Param,
   ParseIntPipe,
   Patch,
@@ -72,13 +70,6 @@ export default class UsersController {
     @Body(new ValidationPipe()) data: UpdateUserAvatarDto,
   ) {
     await this.commandBus.execute(new UpdateUserAvatarCommand(id, data));
-    throw new HttpException(
-      {
-        status: HttpStatus.CREATED,
-        error: 'Avatar set successfully',
-      },
-      HttpStatus.CREATED,
-    );
   }
 
   @UseGuards(AccessGuard)

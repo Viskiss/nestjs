@@ -1,12 +1,7 @@
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import {
-  BadRequestException,
-  CacheModule,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { CacheModule } from '@nestjs/common';
 import { RedisClientOptions } from 'redis';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
@@ -14,12 +9,15 @@ import { RedisService } from '../../../services/redis/redis.service';
 import { BcryptService } from '../../../services/bcrypt/bcrypt.service';
 import { UsersService } from '../../users/users.service';
 import { AuthService } from '../auth.service';
-import { fakeUser, repositoryMockFactory } from '../../../../test/fake.testDb';
-import User from '../../../db/entities/user.entity';
+
 import {
   JwtAccessStrategy,
   JwtRefreshStrategy,
 } from '../../../common/authGuard';
+
+import User from '../../../db/entities/user.entity';
+
+import { fakeUser, repositoryMockFactory } from '../../../../test/fake.testDb';
 
 describe('authService test', () => {
   let authService: AuthService;
@@ -78,9 +76,7 @@ describe('authService test', () => {
       password: '11111',
     });
 
-    expect(test).rejects.toThrow(
-      new NotFoundException('User with this email already created'),
-    );
+    expect(test).rejects.toThrow('User with this email already created');
   });
 
   it('Return error (user) / sign-up', async () => {
@@ -93,9 +89,7 @@ describe('authService test', () => {
       password: '11111',
     });
 
-    expect(test).rejects.toThrow(
-      new InternalServerErrorException('Unable create user'),
-    );
+    expect(test).rejects.toThrow('Unable create user');
   });
 
   it('Return user after creating / sign-up', async () => {
@@ -125,7 +119,7 @@ describe('authService test', () => {
       password: '11111',
     });
 
-    expect(test).rejects.toThrow(new NotFoundException('User not found'));
+    expect(test).rejects.toThrow('User not found');
   });
 
   it('Return error (password) / sign-in', async () => {
@@ -136,9 +130,7 @@ describe('authService test', () => {
       password: '',
     });
 
-    expect(test).rejects.toThrow(
-      new BadRequestException('Password is invalid'),
-    );
+    expect(test).rejects.toThrow('Password is invalid');
   });
 
   it('Return user after auth / sign-in', async () => {
@@ -164,9 +156,7 @@ describe('authService test', () => {
 
     const test = authService.refresh('some refresh token');
 
-    expect(test).rejects.toThrow(
-      new BadRequestException('Refresh token is invalid'),
-    );
+    expect(test).rejects.toThrow('Refresh token is invalid');
   });
 
   it('Return error (token) / refresh', async () => {
@@ -176,9 +166,7 @@ describe('authService test', () => {
 
     const test = authService.refresh('some refresh token');
 
-    expect(test).rejects.toThrow(
-      new NotFoundException('Refresh token is invalid'),
-    );
+    expect(test).rejects.toThrow('Refresh token is invalid');
   });
 
   it('Return tokens / refresh', async () => {
@@ -191,6 +179,20 @@ describe('authService test', () => {
     });
 
     const test = await authService.refresh('some refresh token');
+
+    expect(test).toStrictEqual({
+      accessToken: 'some token',
+      refreshToken: 'some token',
+    });
+  });
+
+  it('Return tokens / generate  tokens', async () => {
+    jest.spyOn(usersService, 'findUserByEmail').mockResolvedValue(fakeUser);
+    jest
+      .spyOn(jwtService, 'sign')
+      .mockImplementation(() => 'some token' as never);
+
+    const test = await authService.generateTokens('email');
 
     expect(test).toStrictEqual({
       accessToken: 'some token',

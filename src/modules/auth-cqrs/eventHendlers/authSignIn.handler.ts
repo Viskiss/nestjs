@@ -40,6 +40,7 @@ export class AuthSignInHandler implements ICommandHandler<SignInCommand> {
         message: 'Password is invalid',
       });
     }
+
     const tokens = await this.jwtTokenService.generateTokens(
       command.body.email,
     );

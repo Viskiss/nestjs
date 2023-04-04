@@ -32,3 +32,11 @@ export const fakeUser = {
   fullName: null,
   avatar: null,
 };
+
+export const fakeUser2 = {
+  id: 1,
+  email: '1@mail.ru',
+  password: '$2a$10$ujcELjzFJuKQdZ8ad6rdxus32l4SUqU21oBqgbTSeMTCARmOuNeEe',
+  fullName: null,
+  avatar: null,
+};

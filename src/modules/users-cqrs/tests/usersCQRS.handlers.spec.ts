@@ -1,9 +1,9 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
 import UsersController from '../users.controller';
+
 import {
   DeleteUserHandler,
   GetAllUsersHandler,
@@ -12,9 +12,12 @@ import {
   UpdateUserHandler,
   UpdateUserPasswordHandler,
 } from '../eventHendlers';
-import User from '../../../db/entities/user.entity';
-import { fakeUser, repositoryMockFactory } from '../../../../test/fake.testDb';
+
 import { BcryptService } from '../../../services/bcrypt/bcrypt.service';
+
+import User from '../../../db/entities/user.entity';
+
+import { fakeUser, repositoryMockFactory } from '../../../../test/fake.testDb';
 
 describe('userCQRSController test', () => {
   let getAllUsers: GetAllUsersHandler;
@@ -61,9 +64,7 @@ describe('userCQRSController test', () => {
 
   it('Return users array (error) / getAllUsers', async () => {
     const test = getAllUsers.execute();
-    expect(test).rejects.toThrow(
-      new BadRequestException('Unable get all users'),
-    );
+    expect(test).rejects.toThrow('Unable get all users');
   });
 
   it('Return users array / getAllUsers', async () => {
@@ -76,7 +77,7 @@ describe('userCQRSController test', () => {
     const test = getUser.execute({
       id: 1,
     });
-    expect(test).rejects.toThrow(new BadRequestException('Unable get user'));
+    expect(test).rejects.toThrow('Unable get user');
   });
 
   it('Return user / get User', async () => {
@@ -96,7 +97,7 @@ describe('userCQRSController test', () => {
       userId: 1,
     });
 
-    expect(test).rejects.toThrow(new BadRequestException('Unable delete user'));
+    expect(test).rejects.toThrow('Unable delete user');
   });
 
   it('Delete user / delete User', async () => {
@@ -117,7 +118,7 @@ describe('userCQRSController test', () => {
       body: { email: '', fullName: '' },
     });
 
-    expect(test).rejects.toThrow(new BadRequestException('Nothing to update'));
+    expect(test).rejects.toThrow('Nothing to update');
   });
 
   it('Return user after update (error) / update user', async () => {
@@ -128,9 +129,7 @@ describe('userCQRSController test', () => {
       body: { email: '1@mail.ru', fullName: null },
     });
 
-    expect(test).rejects.toThrow(
-      new BadRequestException('Update needs a new value'),
-    );
+    expect(test).rejects.toThrow('Update needs a new value');
   });
 
   it('Return user after update / update user', async () => {
@@ -152,7 +151,7 @@ describe('userCQRSController test', () => {
       body: { avatar: 'str' },
     });
 
-    expect(test).rejects.toThrow(new NotFoundException('User not found'));
+    expect(test).rejects.toThrow('User not found');
   });
 
   it('Return true after update avatar / update user avatar', async () => {
@@ -174,7 +173,7 @@ describe('userCQRSController test', () => {
       body: { password: '', newPassword: '' },
     });
 
-    expect(test).rejects.toThrow(new NotFoundException('User not found'));
+    expect(test).rejects.toThrow('User not found');
   });
 
   it('Return user after update password (error) / update user password', async () => {
@@ -193,9 +192,7 @@ describe('userCQRSController test', () => {
       body: { password: '11111', newPassword: '11111' },
     });
 
-    expect(test).rejects.toThrow(
-      new BadRequestException('Your password is invalid'),
-    );
+    expect(test).rejects.toThrow('Your password is invalid');
   });
 
   it('Return user after update password (error) / update user password', async () => {
@@ -214,9 +211,7 @@ describe('userCQRSController test', () => {
       body: { password: '11111', newPassword: '11111' },
     });
 
-    expect(test).rejects.toThrow(
-      new BadRequestException('Password and new password must be different'),
-    );
+    expect(test).rejects.toThrow('Password and new password must be different');
   });
 
   it('Return user after update password (error) / update user password', async () => {

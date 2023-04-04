@@ -36,6 +36,7 @@ export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {
     }
 
     await this.postRepository.save(newPost);
+
     return newPost;
   }
 }

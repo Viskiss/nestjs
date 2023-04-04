@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   UseGuards,
+  ValidationPipe,
 } from '@nestjs/common';
 
 import { UsersService } from './users.service';
@@ -37,7 +38,7 @@ export class UsersController {
   @Patch(':id')
   updateUser(
     @Param('id', ParseIntPipe) id: number,
-    @Body() data: UpdateUserDto,
+    @Body(new ValidationPipe()) data: UpdateUserDto,
   ) {
     return this.usersService.updateUser(data, id);
   }
@@ -46,7 +47,7 @@ export class UsersController {
   @Patch('password/:id')
   updateUserPassword(
     @Param('id', ParseIntPipe) id: number,
-    @Body() data: UpdateUserPasswordDto,
+    @Body(new ValidationPipe()) data: UpdateUserPasswordDto,
   ) {
     return this.usersService.updateUserPassword(data, id);
   }
@@ -55,7 +56,7 @@ export class UsersController {
   @Patch('avatar/:id')
   async updateUserAvatar(
     @Param('id', ParseIntPipe) id: number,
-    @Body() data: UpdateUserAvatarDto,
+    @Body(new ValidationPipe()) data: UpdateUserAvatarDto,
   ) {
     return this.usersService.uploadUserAvatar(id, data);
   }
