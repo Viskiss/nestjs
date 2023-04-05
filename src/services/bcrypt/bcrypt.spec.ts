@@ -1,7 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { BcryptService } from './bcrypt.service';
 import * as bcrypt from 'bcrypt';
-import { HttpException } from '@nestjs/common';
+
+import { BcryptService } from './bcrypt.service';
+
+import { BcryptModule } from './bcrypt.module';
 
 describe('bcrypt test', () => {
   let bcryptService: BcryptService;
@@ -9,6 +11,7 @@ describe('bcrypt test', () => {
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
+      imports: [BcryptModule],
       providers: [BcryptService],
     }).compile();
     bcryptService = module.get<BcryptService>(BcryptService);

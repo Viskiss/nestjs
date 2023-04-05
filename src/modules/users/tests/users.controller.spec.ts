@@ -14,7 +14,7 @@ import User from '../../../db/entities/user.entity';
 
 import { repositoryMockFactory } from '../../../../test/fake.testDb';
 
-describe('Users controller', () => {
+describe('users controller test', () => {
   let app: INestApplication;
 
   beforeAll(async () => {

@@ -14,8 +14,9 @@ import CommentsController from '../comment.controller';
 import Comment from '../../../db/entities/comment.entity';
 
 import { repositoryMockFactory } from '../../../../test/fake.testDb';
+import { CommentsModule } from '../comment.module';
 
-describe('comentsCQRS handlers test', () => {
+describe('commentCQRS handlers test', () => {
   let createComment: CreateCommentHandler;
   let updateComment: UpdateCommentHandler;
   let getComments: GetCommentsHandler;
@@ -25,9 +26,9 @@ describe('comentsCQRS handlers test', () => {
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
-      imports: [],
       controllers: [CommentsController],
       providers: [
+        CommentsModule,
         CommandBus,
         DeleteCommentHandler,
         UpdateCommentHandler,

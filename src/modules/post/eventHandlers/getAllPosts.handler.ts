@@ -14,7 +14,7 @@ export class GetAllPostsHandler implements ICommandHandler<GetAllPostsCommand> {
   ) {}
 
   async execute() {
-    const allPosts = this.postRepository.find();
+    const allPosts = await this.postRepository.find();
 
     if (!allPosts) {
       throw new BadRequestException({

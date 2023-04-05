@@ -18,8 +18,9 @@ import Post from '../../../db/entities/post.entity';
 import User from '../../../db/entities/user.entity';
 
 import { fakeUser, repositoryMockFactory } from '../../../../test/fake.testDb';
+import { PostsModule } from '../post.module';
 
-describe('comentsCQRS handlers test', () => {
+describe('postCQRS handlers test', () => {
   let createPost: CreatePostHandler;
   let updatePost: UpdatePostHandler;
   let getPosts: GetAllPostsHandler;
@@ -30,9 +31,9 @@ describe('comentsCQRS handlers test', () => {
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
-      imports: [],
       controllers: [PostsController],
       providers: [
+        PostsModule,
         CommandBus,
         CreatePostHandler,
         UpdatePostHandler,

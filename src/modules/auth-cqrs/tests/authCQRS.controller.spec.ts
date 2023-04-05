@@ -6,14 +6,16 @@ import { Test } from '@nestjs/testing';
 import { RefreshGuard } from '../../../common/authGuard';
 
 import AuthController from '../auth.controller';
+import { AuthCQRSModule } from '../auth.module';
 
-describe('userCQRSController test', () => {
+describe('authCQRS controller test', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       controllers: [AuthController],
       providers: [
+        AuthCQRSModule,
         CommandBus,
         {
           provide: CommandBus,

@@ -7,18 +7,18 @@ import { dataSource } from '../db/dataSource';
 import { CommentsModule } from '../modules/comment/comment.module';
 import { PostsModule } from '../modules/post/post.module';
 
-import { AuthCQRSModule } from './auth-cqrs/auth.module';
-import { UsersCQRSModule } from './users-cqrs/users.module';
-// import { AuthModule } from './auth/auth.module';
-// import { UsersModule } from './users/users.module';
+// import { AuthCQRSModule } from './auth-cqrs/auth.module';
+// import { UsersCQRSModule } from './users-cqrs/users.module';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
     CacheModule.register(),
     TypeOrmModule.forRoot(dataSource),
     ConfigModule.forRoot(EnvConfig),
-    UsersCQRSModule,
-    AuthCQRSModule,
+    UsersModule,
+    AuthModule,
     PostsModule,
     CommentsModule,
   ],

@@ -11,6 +11,7 @@ import { JwtAccessStrategy, JwtRefreshStrategy } from '../../common/authGuard';
 import User from '../../db/entities/user.entity';
 
 import { repositoryMockFactory } from '../../../test/fake.testDb';
+import { JwtTokenModule } from './jwt.module';
 
 describe('jwt test', () => {
   let jwtTokenService: JwtTokenService;
@@ -19,6 +20,7 @@ describe('jwt test', () => {
   beforeAll(async () => {
     module = await Test.createTestingModule({
       providers: [
+        JwtTokenModule,
         JwtAccessStrategy,
         JwtRefreshStrategy,
         JwtTokenService,

@@ -29,14 +29,14 @@ import { CreatePostDto, DeletePostDto, UpdatePostDto } from './post.dto';
 export default class PostsController {
   constructor(private commandBus: CommandBus) {}
 
-  @Get()
   @UseGuards(AccessGuard)
+  @Get('getAll')
   async getAllPosts() {
     return this.commandBus.execute(new GetAllPostsCommand());
   }
 
-  @Post(':id')
   @UseGuards(AccessGuard)
+  @Post(':id')
   async createPost(
     @Body(new ValidationPipe()) body: CreatePostDto,
     @Param('id', ParseIntPipe) id: number,
@@ -44,8 +44,8 @@ export default class PostsController {
     return this.commandBus.execute(new CreatePostCommand(body.text, id));
   }
 
-  @Patch(':id')
   @UseGuards(AccessGuard)
+  @Patch(':id')
   async updatePost(
     @Body(new ValidationPipe()) body: UpdatePostDto,
     @Param('id', ParseIntPipe) id: number,
@@ -53,8 +53,8 @@ export default class PostsController {
     return this.commandBus.execute(new UpdatePostCommand(body, id));
   }
 
-  @Delete(':id')
   @UseGuards(AccessGuard)
+  @Delete(':id')
   async deletePost(
     @Body(new ValidationPipe()) body: DeletePostDto,
     @Param('id', ParseIntPipe) id: number,

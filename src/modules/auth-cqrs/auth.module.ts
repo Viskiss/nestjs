@@ -20,7 +20,7 @@ import {
   RefreshTokenHandler,
 } from './eventHendlers';
 import User from '../../db/entities/user.entity';
-import { JwtTokenModule } from 'src/services/jwt/jwt.module';
+import { JwtTokenModule } from '../../services/jwt/jwt.module';
 
 @Module({
   imports: [

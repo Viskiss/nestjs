@@ -18,8 +18,9 @@ import { BcryptService } from '../../../services/bcrypt/bcrypt.service';
 import User from '../../../db/entities/user.entity';
 
 import { fakeUser, repositoryMockFactory } from '../../../../test/fake.testDb';
+import { UsersCQRSModule } from '../users.module';
 
-describe('userCQRSController test', () => {
+describe('userCQRS handlers test', () => {
   let getAllUsers: GetAllUsersHandler;
   let deleteUser: DeleteUserHandler;
   let getUser: GetUserHandler;
@@ -34,6 +35,7 @@ describe('userCQRSController test', () => {
     module = await Test.createTestingModule({
       controllers: [UsersController],
       providers: [
+        UsersCQRSModule,
         BcryptService,
         CommandBus,
         GetAllUsersHandler,
@@ -141,6 +143,8 @@ describe('userCQRSController test', () => {
     });
 
     expect(test).toBe(fakeUser);
+    expect(test.fullName).toBe('Aboba');
+    expect(test.email).toBe('11@mail.ru');
   });
 
   it('Return true after update avatar (error) / update user avatar', async () => {

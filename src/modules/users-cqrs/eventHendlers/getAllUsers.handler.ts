@@ -14,7 +14,7 @@ export class GetAllUsersHandler implements ICommandHandler<GetAllUsersCommand> {
   ) {}
 
   async execute() {
-    const allUsers = this.userRepository.find();
+    const allUsers = await this.userRepository.find();
 
     if (!allUsers) {
       throw new BadRequestException({

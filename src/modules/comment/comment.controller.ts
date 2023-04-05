@@ -27,12 +27,22 @@ import {
   UpdateCommentCommand,
   GetCommentsCommand,
 } from './commands/comment.commands';
+import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { SignInUserDto } from '../auth/auth.dto';
 
 @Controller('comments')
 @UseInterceptors(ClassSerializerInterceptor)
 export default class CommentsController {
   constructor(private commandBus: CommandBus) {}
 
+  @ApiOperation({ description: 'Return' })
+  @ApiResponse({ status: 200, description: 'Return user, tokens' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  @ApiResponse({ status: 400, description: 'Password is invalid' })
+  @ApiBody({
+    description: 'User email, user password',
+    type: SignInUserDto,
+  })
   @Get(':id')
   @UseGuards(AccessGuard)
   async getComments(@Param('id', ParseIntPipe) id: number) {

@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { RedisService } from './redis.service';
 import { RedisClientOptions } from 'redis';
+import { RedisModule } from './redis.module';
 
 describe('redis test', () => {
   let redisService: RedisService;
@@ -12,6 +13,7 @@ describe('redis test', () => {
   beforeAll(async () => {
     module = await Test.createTestingModule({
       imports: [
+        RedisModule,
         ConfigModule,
         CacheModule.registerAsync<RedisClientOptions>({
           imports: [ConfigModule],

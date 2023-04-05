@@ -34,7 +34,10 @@ async function bootstrap() {
     .addTag('user')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+
+  SwaggerModule.setup('api', app, document, {
+    customSiteTitle: 'Swagger Doc userApi',
+  });
 
   await app.listen(port, () => {
     Logger.log(`Listening at http://localhost:${port}/${globalPrefix}`);

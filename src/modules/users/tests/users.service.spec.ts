@@ -12,8 +12,9 @@ import { BcryptModule } from '../../../services/bcrypt/bcrypt.module';
 import { BcryptService } from '../../../services/bcrypt/bcrypt.service';
 
 import User from '../../../db/entities/user.entity';
+import { UsersModule } from '../users.module';
 
-describe('Users service test', () => {
+describe('users service test', () => {
   let usersService: UsersService;
   let userRepository;
   let module: TestingModule;
@@ -22,6 +23,7 @@ describe('Users service test', () => {
     module = await Test.createTestingModule({
       imports: [BcryptModule],
       providers: [
+        UsersModule,
         BcryptService,
         UsersService,
         {

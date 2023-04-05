@@ -18,6 +18,6 @@ export class RedisService {
   }
 
   async set<T>(key: string, value: string): Promise<T | void> {
-    return await this.cache.set(key, value, 100000);
+    return await this.cache.set(key, value, +this.cacheTtl);
   }
 }

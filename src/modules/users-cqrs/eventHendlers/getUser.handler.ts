@@ -14,7 +14,7 @@ export class GetUserHandler implements ICommandHandler<GetUserCommand> {
   ) {}
 
   async execute(command: GetUserCommand) {
-    const user = this.userRepository.findOneBy({ id: command.id });
+    const user = await this.userRepository.findOneBy({ id: command.id });
 
     if (!user) {
       throw new BadRequestException({

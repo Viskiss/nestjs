@@ -6,7 +6,7 @@ import { Test } from '@nestjs/testing';
 import { AccessGuard } from '../../../common/authGuard';
 import UsersController from '../users.controller';
 
-describe('userCQRSController test', () => {
+describe('userCQRS controller test', () => {
   let app: INestApplication;
 
   beforeAll(async () => {

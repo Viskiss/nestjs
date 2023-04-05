@@ -12,7 +12,7 @@ import { AuthController } from '../auth.controller';
 
 import { RefreshGuard } from '../../../common/authGuard';
 
-describe('authService test', () => {
+describe('auth controller test', () => {
   let app: INestApplication;
 
   beforeAll(async () => {

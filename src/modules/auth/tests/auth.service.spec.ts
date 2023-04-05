@@ -18,8 +18,9 @@ import {
 import User from '../../../db/entities/user.entity';
 
 import { fakeUser, repositoryMockFactory } from '../../../../test/fake.testDb';
+import { AuthModule } from '../auth.module';
 
-describe('authService test', () => {
+describe('auth service test', () => {
   let authService: AuthService;
   let usersService: UsersService;
   let jwtService: JwtService;
@@ -40,6 +41,7 @@ describe('authService test', () => {
         }),
       ],
       providers: [
+        AuthModule,
         JwtService,
         BcryptService,
         AuthService,

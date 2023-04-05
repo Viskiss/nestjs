@@ -33,7 +33,7 @@
     "@nestjs/microservices": "^9.3.10",
     "@nestjs/passport": "^9.0.3",
     "@nestjs/platform-express": "^9.0.0",
-    "@nestjs/swagger": "^6.2.1",
+    "@nestjs/swagger": "^6.3.0",
     "@nestjs/typeorm": "^9.0.1",
     "bcrypt": "^5.1.0",
     "cache-manager": "^5.1.7",
@@ -84,7 +84,10 @@
       "json",
       "ts"
     ],
-    "coveragePathIgnorePatterns": ["<rootDir>/common", "<rootDir>/db"],
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/common",
+      "<rootDir>/db"
+    ],
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
