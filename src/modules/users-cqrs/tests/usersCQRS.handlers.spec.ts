@@ -15,10 +15,14 @@ import {
 
 import { BcryptService } from '../../../services/bcrypt/bcrypt.service';
 
+import { UsersCQRSModule } from '../users.module';
+
 import User from '../../../db/entities/user.entity';
 
-import { fakeUser, repositoryMockFactory } from '../../../../test/fake.testDb';
-import { UsersCQRSModule } from '../users.module';
+import {
+  fakeUser,
+  repositoryMockFactory,
+} from '../../../common/testing/fake.testDb';
 
 describe('userCQRS handlers test', () => {
   let getAllUsers: GetAllUsersHandler;

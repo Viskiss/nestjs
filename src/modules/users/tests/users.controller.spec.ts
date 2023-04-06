@@ -12,7 +12,7 @@ import { AccessGuard } from '../../../common/authGuard';
 
 import User from '../../../db/entities/user.entity';
 
-import { repositoryMockFactory } from '../../../../test/fake.testDb';
+import { repositoryMockFactory } from '../../../common/testing/fake.testDb';
 
 describe('users controller test', () => {
   let app: INestApplication;

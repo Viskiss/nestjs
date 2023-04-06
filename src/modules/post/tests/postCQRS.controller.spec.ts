@@ -4,6 +4,7 @@ import { CommandBus } from '@nestjs/cqrs';
 import { Test } from '@nestjs/testing';
 
 import { AccessGuard } from '../../../common/authGuard';
+
 import PostsController from '../post.controller';
 
 describe('postCQRS controller test', () => {
@@ -41,7 +42,9 @@ describe('postCQRS controller test', () => {
   });
 
   it('Return posts / get posts', async () => {
-    const test = await request(app.getHttpServer()).get('/posts').expect(200);
+    const test = await request(app.getHttpServer())
+      .get('/posts/getAll')
+      .expect(200);
 
     expect(test.clientError).toBeFalsy();
   });

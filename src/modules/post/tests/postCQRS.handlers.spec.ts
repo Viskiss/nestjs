@@ -14,11 +14,15 @@ import PostsController from '../post.controller';
 import { UsersService } from '../../../modules/users/users.service';
 import { BcryptService } from '../../../services/bcrypt/bcrypt.service';
 
+import { PostsModule } from '../post.module';
+
 import Post from '../../../db/entities/post.entity';
 import User from '../../../db/entities/user.entity';
 
-import { fakeUser, repositoryMockFactory } from '../../../../test/fake.testDb';
-import { PostsModule } from '../post.module';
+import {
+  fakeUser,
+  repositoryMockFactory,
+} from '../../../common/testing/fake.testDb';
 
 describe('postCQRS handlers test', () => {
   let createPost: CreatePostHandler;

@@ -3,8 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BadRequestException } from '@nestjs/common';
 
-import Post from '../../../db/entities/post.entity';
 import { GetAllPostsCommand } from '../commands/post.commands';
+
+import Post from '../../../db/entities/post.entity';
 
 @CommandHandler(GetAllPostsCommand)
 export class GetAllPostsHandler implements ICommandHandler<GetAllPostsCommand> {

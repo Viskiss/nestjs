@@ -4,8 +4,10 @@ import { Repository } from 'typeorm';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 import { CreatePostCommand } from '../commands/post.commands';
-import Post from '../../../db/entities/post.entity';
+
 import { UsersService } from '../../../modules/users/users.service';
+
+import Post from '../../../db/entities/post.entity';
 
 @CommandHandler(CreatePostCommand)
 export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {

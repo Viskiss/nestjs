@@ -7,10 +7,13 @@ import {
 } from '@nestjs/common';
 
 import { SignUpCommand } from '../commands/auth.commands';
-import User from '../../../db/entities/user.entity';
+
 import { BcryptService } from '../../../services/bcrypt/bcrypt.service';
-import { CreateUserDto } from '../auth.dto';
 import { JwtTokenService } from '../../../services/jwt/jwt.service';
+
+import { CreateUserDto } from '../auth.dto';
+
+import User from '../../../db/entities/user.entity';
 
 @CommandHandler(SignUpCommand)
 export class AuthSignUpHandler implements ICommandHandler<SignUpCommand> {

@@ -6,6 +6,7 @@ import { Test } from '@nestjs/testing';
 import { RefreshGuard } from '../../../common/authGuard';
 
 import AuthController from '../auth.controller';
+
 import { AuthCQRSModule } from '../auth.module';
 
 describe('authCQRS controller test', () => {

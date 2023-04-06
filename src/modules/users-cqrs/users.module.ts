@@ -12,6 +12,7 @@ import {
   DeleteUserHandler,
   GetUserHandler,
 } from './eventHendlers';
+
 import { BcryptModule } from '../../services/bcrypt/bcrypt.module';
 
 @Module({

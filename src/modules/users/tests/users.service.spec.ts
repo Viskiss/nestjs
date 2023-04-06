@@ -2,17 +2,17 @@ import {
   fakeUser,
   fakeUser2,
   repositoryMockFactory,
-} from '../../../../test/fake.testDb';
+} from '../../../common/testing/fake.testDb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
 import { UsersService } from '../users.service';
-
-import { BcryptModule } from '../../../services/bcrypt/bcrypt.module';
 import { BcryptService } from '../../../services/bcrypt/bcrypt.service';
 
-import User from '../../../db/entities/user.entity';
+import { BcryptModule } from '../../../services/bcrypt/bcrypt.module';
 import { UsersModule } from '../users.module';
+
+import User from '../../../db/entities/user.entity';
 
 describe('users service test', () => {
   let usersService: UsersService;

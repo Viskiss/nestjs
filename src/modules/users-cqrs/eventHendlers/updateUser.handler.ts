@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { BadRequestException } from '@nestjs/common';
 
 import { UpdateUserCommand } from '../commands/users.commands';
+
 import User from '../../../db/entities/user.entity';
 
 @CommandHandler(UpdateUserCommand)

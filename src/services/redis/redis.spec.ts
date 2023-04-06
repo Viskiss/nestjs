@@ -1,9 +1,10 @@
 import { CacheModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { RedisClientOptions } from 'redis';
 
 import { RedisService } from './redis.service';
-import { RedisClientOptions } from 'redis';
+
 import { RedisModule } from './redis.module';
 
 describe('redis test', () => {

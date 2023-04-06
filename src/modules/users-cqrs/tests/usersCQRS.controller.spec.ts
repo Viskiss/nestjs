@@ -4,6 +4,7 @@ import { CommandBus } from '@nestjs/cqrs';
 import { Test } from '@nestjs/testing';
 
 import { AccessGuard } from '../../../common/authGuard';
+
 import UsersController from '../users.controller';
 
 describe('userCQRS controller test', () => {

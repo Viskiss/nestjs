@@ -1,10 +1,11 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 import { DeleteCommentCommand } from '../commands/comment.commands';
+
 import Comment from '../../../db/entities/comment.entity';
-import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 @CommandHandler(DeleteCommentCommand)
 export class DeleteCommentHandler

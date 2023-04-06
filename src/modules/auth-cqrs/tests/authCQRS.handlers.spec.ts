@@ -20,7 +20,10 @@ import { RedisService } from '../../../services/redis/redis.service';
 
 import User from '../../../db/entities/user.entity';
 
-import { fakeUser, repositoryMockFactory } from '../../../../test/fake.testDb';
+import {
+  fakeUser,
+  repositoryMockFactory,
+} from '../../../common/testing/fake.testDb';
 
 describe('authCQRS handlers test', () => {
   let signIn: AuthSignInHandler;

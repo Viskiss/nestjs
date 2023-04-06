@@ -8,11 +8,12 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import User from '../../db/entities/user.entity';
 import { CreateUserDto } from '../auth/auth.dto';
 import { UpdateUserDto, UpdateUserPasswordDto } from './users.dto';
 
 import { BcryptService } from '../../services/bcrypt/bcrypt.service';
+
+import User from '../../db/entities/user.entity';
 
 @Injectable()
 export class UsersService {

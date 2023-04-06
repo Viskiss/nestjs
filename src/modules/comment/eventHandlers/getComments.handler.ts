@@ -1,11 +1,11 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { BadRequestException } from '@nestjs/common';
+
+import { GetCommentsCommand } from '../commands/comment.commands';
 
 import Comment from '../../../db/entities/comment.entity';
-
-import { BadRequestException } from '@nestjs/common';
-import { GetCommentsCommand } from '../commands/comment.commands';
 
 @CommandHandler(GetCommentsCommand)
 export class GetCommentsHandler implements ICommandHandler<GetCommentsCommand> {

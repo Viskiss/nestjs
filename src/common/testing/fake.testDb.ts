@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/ban-types */
-import User from '../src/db/entities/user.entity';
+import User from '../../db/entities/user.entity';
 import { Repository } from 'typeorm';
 
 export type MockType<T> = {

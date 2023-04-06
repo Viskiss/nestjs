@@ -3,8 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BadRequestException } from '@nestjs/common';
 
-import User from '../../../db/entities/user.entity';
 import { GetUserCommand } from '../commands/users.commands';
+
+import User from '../../../db/entities/user.entity';
 
 @CommandHandler(GetUserCommand)
 export class GetUserHandler implements ICommandHandler<GetUserCommand> {

@@ -11,10 +11,11 @@ import {
 
 import CommentsController from '../comment.controller';
 
+import { CommentsModule } from '../comment.module';
+
 import Comment from '../../../db/entities/comment.entity';
 
-import { repositoryMockFactory } from '../../../../test/fake.testDb';
-import { CommentsModule } from '../comment.module';
+import { repositoryMockFactory } from '../../../common/testing/fake.testDb';
 
 describe('commentCQRS handlers test', () => {
   let createComment: CreateCommentHandler;

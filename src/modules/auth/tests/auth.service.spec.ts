@@ -10,6 +10,8 @@ import { BcryptService } from '../../../services/bcrypt/bcrypt.service';
 import { UsersService } from '../../users/users.service';
 import { AuthService } from '../auth.service';
 
+import { AuthModule } from '../auth.module';
+
 import {
   JwtAccessStrategy,
   JwtRefreshStrategy,
@@ -17,8 +19,10 @@ import {
 
 import User from '../../../db/entities/user.entity';
 
-import { fakeUser, repositoryMockFactory } from '../../../../test/fake.testDb';
-import { AuthModule } from '../auth.module';
+import {
+  fakeUser,
+  repositoryMockFactory,
+} from '../../../common/testing/fake.testDb';
 
 describe('auth service test', () => {
   let authService: AuthService;
@@ -168,7 +172,7 @@ describe('auth service test', () => {
 
     const test = authService.refresh('some refresh token');
 
-    expect(test).rejects.toThrow('Refresh token is invalid');
+    expect(test).rejects.toThrow('User not found');
   });
 
   it('Return tokens / refresh', async () => {

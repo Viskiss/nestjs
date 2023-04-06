@@ -1,10 +1,11 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { NotFoundException } from '@nestjs/common';
 
 import { UpdateCommentCommand } from '../commands/comment.commands';
+
 import Comment from '../../../db/entities/comment.entity';
-import { BadRequestException } from '@nestjs/common';
 
 @CommandHandler(UpdateCommentCommand)
 export class UpdateCommentHandler
@@ -23,7 +24,7 @@ export class UpdateCommentHandler
     });
 
     if (!comment) {
-      throw new BadRequestException({
+      throw new NotFoundException({
         message: 'Comment not found',
       });
     }

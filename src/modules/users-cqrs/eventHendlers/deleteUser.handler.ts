@@ -1,9 +1,10 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { BadRequestException } from '@nestjs/common';
 
 import { DeleteUserProfileCommand } from '../commands/users.commands';
-import { BadRequestException } from '@nestjs/common';
+
 import User from '../../../db/entities/user.entity';
 
 @CommandHandler(DeleteUserProfileCommand)

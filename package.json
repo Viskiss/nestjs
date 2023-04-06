@@ -86,7 +86,9 @@
     ],
     "coveragePathIgnorePatterns": [
       "<rootDir>/common",
-      "<rootDir>/db"
+      "<rootDir>/db",
+      "<rootDir>/main.ts",
+      "<rootDir>/modules/app.module.ts"
     ],
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {

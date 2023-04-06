@@ -10,17 +10,21 @@ import {
   JwtRefreshStrategy,
 } from '../../common/authGuard/jwt.strategies';
 
+import { JwtTokenModule } from '../../services/jwt/jwt.module';
+
 import AuthController from './auth.controller';
-import { UsersCQRSModule } from '../users-cqrs/users.module';
+
+import { UsersModule } from '../users/users.module';
 import { BcryptModule } from '../../services/bcrypt/bcrypt.module';
 import { RedisModule } from '../../services/redis/redis.module';
+
 import {
   AuthSignInHandler,
   AuthSignUpHandler,
   RefreshTokenHandler,
 } from './eventHendlers';
+
 import User from '../../db/entities/user.entity';
-import { JwtTokenModule } from '../../services/jwt/jwt.module';
 
 @Module({
   imports: [
@@ -31,7 +35,7 @@ import { JwtTokenModule } from '../../services/jwt/jwt.module';
     PassportModule,
     BcryptModule,
     JwtTokenModule,
-    UsersCQRSModule,
+    UsersModule,
     CqrsModule,
   ],
   controllers: [AuthController],

@@ -1,4 +1,4 @@
-import { CreateUserDto, RefreshTokenDto } from './auth.dto';
+import { CommandBus } from '@nestjs/cqrs';
 import {
   Controller,
   Post,
@@ -8,30 +8,39 @@ import {
   ClassSerializerInterceptor,
   ValidationPipe,
 } from '@nestjs/common';
-
-import { SignInUserDto } from './auth.dto';
-
-import { RefreshGuard } from '../../common/authGuard';
-import { CommandBus } from '@nestjs/cqrs';
-import {
-  SignInCommand,
-  RefreshTokenCommand,
-  SignUpCommand,
-} from './commands/auth.commands';
 import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
   ApiResponse,
+  ApiTags,
 } from '@nestjs/swagger';
 
+import { SignInUserDto } from './auth.dto';
+
+import { RefreshGuard } from '../../common/authGuard';
+
+import {
+  SignInCommand,
+  RefreshTokenCommand,
+  SignUpCommand,
+} from './commands/auth.commands';
+
+import { CreateUserDto, RefreshTokenDto } from './auth.dto';
+import { AuthPayload, AuthRefreshPayload } from '../../common/models/auth';
+
 @Controller('auth')
+@ApiTags('auth')
 @UseInterceptors(ClassSerializerInterceptor)
 export default class AuthController {
   constructor(private commandBus: CommandBus) {}
 
   @ApiOperation({ description: 'Auth (sign-in) return user with tokens' })
-  @ApiResponse({ status: 200, description: 'Return user, tokens' })
+  @ApiResponse({
+    status: 200,
+    description: 'Return user, tokens',
+    type: AuthPayload,
+  })
   @ApiResponse({ status: 404, description: 'User not found' })
   @ApiResponse({ status: 400, description: 'Password is invalid' })
   @ApiBody({
@@ -62,14 +71,19 @@ export default class AuthController {
   }
 
   @ApiOperation({ description: 'Return tokens' })
-  @ApiResponse({ status: 200, description: 'Return tokens' })
+  @ApiResponse({
+    status: 200,
+    description: 'Return tokens',
+    type: AuthRefreshPayload,
+  })
   @ApiResponse({ status: 400, description: 'Refresh token is invalid' })
   @ApiResponse({ status: 404, description: 'User not found' })
+  @ApiResponse({ status: 401, description: 'Invalid token!' })
   @ApiBody({
     description: 'Refresh token',
     type: RefreshTokenDto,
   })
-  @ApiBearerAuth('Use auth bearer token')
+  @ApiBearerAuth('access-token')
   @UseGuards(RefreshGuard)
   @Post('/refresh')
   async refresh(@Body(new ValidationPipe()) body: RefreshTokenDto) {

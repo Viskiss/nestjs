@@ -1,20 +1,22 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 import { JwtService } from '@nestjs/jwt';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { JwtAccessStrategy, JwtRefreshStrategy } from '../../common/authGuard';
+
 import { JwtTokenService } from './jwt.service';
 import { RedisService } from '../redis/redis.service';
 
-import { JwtAccessStrategy, JwtRefreshStrategy } from '../../common/authGuard';
+import { JwtTokenModule } from './jwt.module';
 
 import User from '../../db/entities/user.entity';
 
-import { repositoryMockFactory } from '../../../test/fake.testDb';
-import { JwtTokenModule } from './jwt.module';
+import { fakeUser, repositoryMockFactory } from '../../common/testing/fake.testDb';
 
 describe('jwt test', () => {
   let jwtTokenService: JwtTokenService;
+  let jwtService: JwtService;
+  let userRepository;
   let module: TestingModule;
 
   beforeAll(async () => {
@@ -46,12 +48,16 @@ describe('jwt test', () => {
       .compile();
 
     jwtTokenService = module.get(JwtTokenService);
+    userRepository = module.get(getRepositoryToken(User));
+    jwtService = module.get(JwtService);
 
     await module.init();
   });
 
-  it('Return Return pair of tokens', async () => {
+  it('Return pair of tokens', async () => {
     const email = 'some email';
+    jest.spyOn(userRepository, 'findOneBy').mockResolvedValue(fakeUser);
+    jest.spyOn(jwtService, 'sign').mockResolvedValue('token' as never);
 
     const result = await jwtTokenService.generateTokens(email);
 

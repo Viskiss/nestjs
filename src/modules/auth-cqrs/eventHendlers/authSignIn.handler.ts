@@ -4,9 +4,11 @@ import { Repository } from 'typeorm';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 import { SignInCommand } from '../commands/auth.commands';
-import User from '../../../db/entities/user.entity';
+
 import { BcryptService } from '../../../services/bcrypt/bcrypt.service';
 import { JwtTokenService } from '../../../services/jwt/jwt.service';
+
+import User from '../../../db/entities/user.entity';
 
 @CommandHandler(SignInCommand)
 export class AuthSignInHandler implements ICommandHandler<SignInCommand> {

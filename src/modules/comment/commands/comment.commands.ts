@@ -1,5 +1,8 @@
-import { CreateCommentDto, DeleteCommentDto } from '../comment.dto';
-import { UpdateCommentDto } from '../comment.dto';
+import {
+  CreateCommentDto,
+  DeleteCommentDto,
+  UpdateCommentDto,
+} from '../comment.dto';
 
 export class CreateCommentCommand {
   constructor(

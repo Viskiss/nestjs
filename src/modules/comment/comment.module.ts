@@ -3,14 +3,17 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CqrsModule } from '@nestjs/cqrs';
 
 import CommentsController from './comment.controller';
+
 import {
   CreateCommentHandler,
   UpdateCommentHandler,
   GetCommentsHandler,
+  DeleteCommentHandler,
 } from './eventHandlers';
-import Comment from '../../db/entities/comment.entity';
+
 import { PostsModule } from '../post/post.module';
-import { DeleteCommentHandler } from './eventHandlers/deleteComment.handler';
+
+import Comment from '../../db/entities/comment.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Comment]), CqrsModule, PostsModule],

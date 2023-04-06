@@ -5,9 +5,11 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { RefreshTokenCommand } from '../commands/auth.commands';
-import User from '../../../db/entities/user.entity';
+
 import { RedisService } from '../../../services/redis/redis.service';
 import { JwtTokenService } from '../../../services/jwt/jwt.service';
+
+import User from '../../../db/entities/user.entity';
 
 @CommandHandler(RefreshTokenCommand)
 export class RefreshTokenHandler
