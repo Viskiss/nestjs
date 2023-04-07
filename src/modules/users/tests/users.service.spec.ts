@@ -13,6 +13,7 @@ import { BcryptModule } from '../../../services/bcrypt/bcrypt.module';
 import { UsersModule } from '../users.module';
 
 import User from '../../../db/entities/user.entity';
+import { HttpException } from '@nestjs/common';
 
 describe('users service test', () => {
   let usersService: UsersService;
@@ -53,8 +54,8 @@ describe('users service test', () => {
     });
 
     const test = usersService.findAllUsers();
-
-    expect(test).rejects.toThrow('INTERNAL_SERVER_ERROR');
+    expect(test).rejects.toThrow(HttpException);
+    expect(test).rejects.toThrowError('INTERNAL_SERVER_ERROR');
   });
 
   it('Return user by id', async () => {

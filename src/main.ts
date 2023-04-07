@@ -47,6 +47,8 @@ async function bootstrap() {
 
   SwaggerModule.setup('api', app, document, {
     customSiteTitle: 'Swagger Doc userApi',
+    customfavIcon:
+      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/35.svg',
   });
 
   await app.listen(port, () => {

@@ -133,6 +133,8 @@ export class UsersService {
 
     await this.userRepository.save(user);
 
+    delete user.password;
+
     return user;
   }
 
