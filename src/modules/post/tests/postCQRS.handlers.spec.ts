@@ -1,6 +1,7 @@
 import { CommandBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 import {
   CreatePostHandler,
@@ -76,6 +77,7 @@ describe('postCQRS handlers test', () => {
     });
 
     expect(test).rejects.toThrow('User not found');
+    expect(test).rejects.toBeInstanceOf(NotFoundException);
   });
 
   it('Return post after create (error) / create post', async () => {
@@ -88,6 +90,7 @@ describe('postCQRS handlers test', () => {
     });
 
     expect(test).rejects.toThrow('Unable create post');
+    expect(test).rejects.toBeInstanceOf(BadRequestException);
   });
 
   it('Return post after create / create post', async () => {
@@ -113,6 +116,7 @@ describe('postCQRS handlers test', () => {
     });
 
     expect(test).rejects.toThrow('Post not found');
+    expect(test).rejects.toBeInstanceOf(NotFoundException);
   });
 
   it('Return true after delete (error) / delete post', async () => {
@@ -126,6 +130,7 @@ describe('postCQRS handlers test', () => {
     });
 
     expect(test).rejects.toThrow('You can only delete your post');
+    expect(test).rejects.toBeInstanceOf(BadRequestException);
   });
 
   it('Return true after delete (error) / delete post', async () => {
@@ -140,6 +145,7 @@ describe('postCQRS handlers test', () => {
     });
 
     expect(test).rejects.toThrow('Unable delete post');
+    expect(test).rejects.toBeInstanceOf(BadRequestException);
   });
 
   it('Return true after delete / delete post', async () => {
@@ -162,6 +168,7 @@ describe('postCQRS handlers test', () => {
     const test = getPosts.execute();
 
     expect(test).rejects.toThrow('Unable get all posts');
+    expect(test).rejects.toBeInstanceOf(BadRequestException);
   });
 
   it('Return posts / get posts', async () => {
@@ -181,6 +188,7 @@ describe('postCQRS handlers test', () => {
     });
 
     expect(test).rejects.toThrow('User not found');
+    expect(test).rejects.toBeInstanceOf(NotFoundException);
   });
 
   it('Return post after update (error) / update post', async () => {
@@ -193,6 +201,7 @@ describe('postCQRS handlers test', () => {
     });
 
     expect(test).rejects.toThrow('Post not found');
+    expect(test).rejects.toBeInstanceOf(NotFoundException);
   });
 
   it('Return post after update (error) / update post', async () => {
@@ -207,6 +216,7 @@ describe('postCQRS handlers test', () => {
     });
 
     expect(test).rejects.toThrow('You can only update your post');
+    expect(test).rejects.toBeInstanceOf(BadRequestException);
   });
 
   it('Return post after update (error) / update post', async () => {
@@ -221,6 +231,7 @@ describe('postCQRS handlers test', () => {
     });
 
     expect(test).rejects.toThrow('Need new text for update');
+    expect(test).rejects.toBeInstanceOf(BadRequestException);
   });
 
   it('Return post after update / update post', async () => {

@@ -43,12 +43,11 @@ async function bootstrap() {
       'access-token',
     )
     .build();
+
   const document = SwaggerModule.createDocument(app, config);
 
   SwaggerModule.setup('api', app, document, {
     customSiteTitle: 'Swagger Doc userApi',
-    customfavIcon:
-      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/35.svg',
   });
 
   await app.listen(port, () => {

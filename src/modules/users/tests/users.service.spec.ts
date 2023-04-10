@@ -5,6 +5,11 @@ import {
 } from '../../../common/testing/fake.testDb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import {
+  BadRequestException,
+  HttpException,
+  NotFoundException,
+} from '@nestjs/common';
 
 import { UsersService } from '../users.service';
 import { BcryptService } from '../../../services/bcrypt/bcrypt.service';
@@ -13,7 +18,6 @@ import { BcryptModule } from '../../../services/bcrypt/bcrypt.module';
 import { UsersModule } from '../users.module';
 
 import User from '../../../db/entities/user.entity';
-import { HttpException } from '@nestjs/common';
 
 describe('users service test', () => {
   let usersService: UsersService;
@@ -97,6 +101,7 @@ describe('users service test', () => {
     const test = usersService.deleteUser(1);
 
     expect(test).rejects.toThrow('Unable delete user');
+    expect(test).rejects.toBeInstanceOf(BadRequestException);
   });
 
   it('Return number after deleting user', async () => {
@@ -131,6 +136,7 @@ describe('users service test', () => {
     );
 
     expect(test).rejects.toThrow('Nothing to update');
+    expect(test).rejects.toBeInstanceOf(BadRequestException);
   });
 
   it('Return user after update data (error)', async () => {
@@ -145,6 +151,7 @@ describe('users service test', () => {
     );
 
     expect(test).rejects.toThrow('Update needs a new value');
+    expect(test).rejects.toBeInstanceOf(BadRequestException);
   });
 
   it('Return user after update data (error)', async () => {
@@ -162,16 +169,31 @@ describe('users service test', () => {
     expect(test.fullName).toBe('name');
   });
 
+  it('Return user after update data (error)', async () => {
+    jest.spyOn(userRepository, 'findOneBy').mockResolvedValue(fakeUser);
+
+    const test = await usersService.updateUser(
+      {
+        email: '',
+        fullName: 'newName',
+      },
+      1,
+    );
+
+    expect(test.email).toBe(fakeUser.email);
+    expect(test.fullName).toBe('newName');
+  });
+
   it('Return user after updating password (error)', async () => {
     jest.spyOn(userRepository, 'findOneBy').mockResolvedValue(undefined);
 
-    expect(
-      async () =>
-        await usersService.updateUserPassword(
-          { newPassword: '', password: '' },
-          1,
-        ),
-    ).rejects.toThrow('User not found');
+    const test = usersService.updateUserPassword(
+      { newPassword: '', password: '' },
+      1,
+    );
+
+    expect(test).rejects.toThrow('User not found');
+    expect(test).rejects.toBeInstanceOf(NotFoundException);
   });
 
   it('Return user after updating password (error)', async () => {
@@ -191,6 +213,7 @@ describe('users service test', () => {
     );
 
     expect(test).rejects.toThrow('Your password is invalid');
+    expect(test).rejects.toBeInstanceOf(BadRequestException);
   });
 
   it('Return user after updating password (error)', async () => {
@@ -210,6 +233,7 @@ describe('users service test', () => {
     );
 
     expect(test).rejects.toThrow('Password and new password must be different');
+    expect(test).rejects.toBeInstanceOf(BadRequestException);
   });
 
   it('Return user after updating password', async () => {
@@ -238,6 +262,7 @@ describe('users service test', () => {
     });
 
     expect(test).rejects.toThrow('User not found');
+    expect(test).rejects.toBeInstanceOf(NotFoundException);
   });
 
   afterEach(() => {

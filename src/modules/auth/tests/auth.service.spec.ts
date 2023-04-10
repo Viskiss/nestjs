@@ -1,7 +1,12 @@
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { CacheModule } from '@nestjs/common';
+import {
+  BadRequestException,
+  CacheModule,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { RedisClientOptions } from 'redis';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
@@ -83,6 +88,7 @@ describe('auth service test', () => {
     });
 
     expect(test).rejects.toThrow('User with this email already created');
+    expect(test).rejects.toBeInstanceOf(NotFoundException);
   });
 
   it('Return error (user) / sign-up', async () => {
@@ -96,6 +102,7 @@ describe('auth service test', () => {
     });
 
     expect(test).rejects.toThrow('Unable create user');
+    expect(test).rejects.toBeInstanceOf(InternalServerErrorException);
   });
 
   it('Return user after creating / sign-up', async () => {
@@ -116,6 +123,7 @@ describe('auth service test', () => {
       user: fakeUser,
       tokens: { accessToken: 'token', refreshToken: 'token' },
     });
+    expect(test).toBeDefined();
   });
 
   it('Return error (user) / sign-in', async () => {
@@ -126,6 +134,7 @@ describe('auth service test', () => {
     });
 
     expect(test).rejects.toThrow('User not found');
+    expect(test).rejects.toBeInstanceOf(NotFoundException);
   });
 
   it('Return error (password) / sign-in', async () => {
@@ -137,6 +146,7 @@ describe('auth service test', () => {
     });
 
     expect(test).rejects.toThrow('Password is invalid');
+    expect(test).rejects.toBeInstanceOf(BadRequestException);
   });
 
   it('Return user after auth / sign-in', async () => {
@@ -163,6 +173,7 @@ describe('auth service test', () => {
     const test = authService.refresh('some refresh token');
 
     expect(test).rejects.toThrow('Refresh token is invalid');
+    expect(test).rejects.toBeInstanceOf(BadRequestException);
   });
 
   it('Return error (token) / refresh', async () => {
@@ -173,6 +184,7 @@ describe('auth service test', () => {
     const test = authService.refresh('some refresh token');
 
     expect(test).rejects.toThrow('User not found');
+    expect(test).rejects.toBeInstanceOf(NotFoundException);
   });
 
   it('Return tokens / refresh', async () => {

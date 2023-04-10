@@ -15,7 +15,7 @@ export type AuthTestType = {
   };
 };
 
-describe('UsersController (e2e)', () => {
+describe('Auth controller (e2e)', () => {
   let authController: AuthController;
   let authService: AuthService;
   let bcryptService: BcryptService;
@@ -33,41 +33,39 @@ describe('UsersController (e2e)', () => {
     authController = new AuthController(authService);
   });
 
-  describe('test authController', () => {
-    it('Return user before creating / sign-up', async () => {
-      const result = {} as AuthTestType;
-      jest.spyOn(authService, 'signUp').mockImplementation(async () => result);
+  it('Return user before creating / sign-up', async () => {
+    const result = {} as AuthTestType;
+    jest.spyOn(authService, 'signUp').mockImplementation(async () => result);
 
-      expect(
-        await authController.signUp({
-          email: 'qwerty@mail.ru',
-          fullName: 'qwerty',
-          password: '11111',
-        }),
-      ).toBe(result);
-    });
+    expect(
+      await authController.signUp({
+        email: 'qwerty@mail.ru',
+        fullName: 'qwerty',
+        password: '11111',
+      }),
+    ).toBe(result);
+  });
 
-    it('Return user before sign-in', async () => {
-      const result = {} as AuthTestType;
-      jest.spyOn(authService, 'signIn').mockImplementation(async () => result);
+  it('Return user before sign-in', async () => {
+    const result = {} as AuthTestType;
+    jest.spyOn(authService, 'signIn').mockImplementation(async () => result);
 
-      expect(
-        await authController.signIn({
-          email: 'qwerty@mail.ru',
-          password: '11111',
-        }),
-      ).toBe(result);
-    });
+    expect(
+      await authController.signIn({
+        email: 'qwerty@mail.ru',
+        password: '11111',
+      }),
+    ).toBe(result);
+  });
 
-    it('Return user before sign-in', async () => {
-      const result = {} as AuthTestType['tokens'];
-      jest.spyOn(authService, 'refresh').mockImplementation(async () => result);
+  it('Return user before sign-in', async () => {
+    const result = {} as AuthTestType['tokens'];
+    jest.spyOn(authService, 'refresh').mockImplementation(async () => result);
 
-      expect(
-        await authController.refresh({
-          token: 'some refresh token',
-        }),
-      ).toBe(result);
-    });
+    expect(
+      await authController.refresh({
+        token: 'some refresh token',
+      }),
+    ).toBe(result);
   });
 });

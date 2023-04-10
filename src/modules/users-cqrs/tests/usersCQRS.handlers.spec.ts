@@ -1,6 +1,7 @@
 import { CommandBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 import UsersController from '../users.controller';
 
@@ -71,6 +72,7 @@ describe('userCQRS handlers test', () => {
   it('Return users array (error) / getAllUsers', async () => {
     const test = getAllUsers.execute();
     expect(test).rejects.toThrow('Unable get all users');
+    expect(test).rejects.toBeInstanceOf(BadRequestException);
   });
 
   it('Return users array / getAllUsers', async () => {
@@ -84,6 +86,7 @@ describe('userCQRS handlers test', () => {
       id: 1,
     });
     expect(test).rejects.toThrow('Unable get user');
+    expect(test).rejects.toBeInstanceOf(BadRequestException);
   });
 
   it('Return user / get User', async () => {
@@ -104,6 +107,7 @@ describe('userCQRS handlers test', () => {
     });
 
     expect(test).rejects.toThrow('Unable delete user');
+    expect(test).rejects.toBeInstanceOf(BadRequestException);
   });
 
   it('Delete user / delete User', async () => {
@@ -125,6 +129,7 @@ describe('userCQRS handlers test', () => {
     });
 
     expect(test).rejects.toThrow('Nothing to update');
+    expect(test).rejects.toBeInstanceOf(BadRequestException);
   });
 
   it('Return user after update (error) / update user', async () => {
@@ -136,6 +141,7 @@ describe('userCQRS handlers test', () => {
     });
 
     expect(test).rejects.toThrow('Update needs a new value');
+    expect(test).rejects.toBeInstanceOf(BadRequestException);
   });
 
   it('Return user after update / update user', async () => {
@@ -151,6 +157,32 @@ describe('userCQRS handlers test', () => {
     expect(test.email).toBe('11@mail.ru');
   });
 
+  it('Return user after update / update user', async () => {
+    jest.spyOn(userRepository, 'findOneBy').mockResolvedValue(fakeUser);
+
+    const test = await updateUser.execute({
+      id: 1,
+      body: { email: '', fullName: 'Aboba' },
+    });
+
+    expect(test).toBe(fakeUser);
+    expect(test.fullName).toBe('Aboba');
+    expect(test.email).toBe('11@mail.ru');
+  });
+
+  it('Return user after update / update user', async () => {
+    jest.spyOn(userRepository, 'findOneBy').mockResolvedValue(fakeUser);
+
+    const test = await updateUser.execute({
+      id: 1,
+      body: { email: 'new@mail.ru', fullName: '' },
+    });
+
+    expect(test).toBe(fakeUser);
+    expect(test.fullName).toBe('Aboba');
+    expect(test.email).toBe('new@mail.ru');
+  });
+
   it('Return true after update avatar (error) / update user avatar', async () => {
     jest.spyOn(userRepository, 'findOneBy').mockResolvedValue(undefined);
 
@@ -160,6 +192,7 @@ describe('userCQRS handlers test', () => {
     });
 
     expect(test).rejects.toThrow('User not found');
+    expect(test).rejects.toBeInstanceOf(NotFoundException);
   });
 
   it('Return true after update avatar / update user avatar', async () => {
@@ -182,6 +215,7 @@ describe('userCQRS handlers test', () => {
     });
 
     expect(test).rejects.toThrow('User not found');
+    expect(test).rejects.toBeInstanceOf(NotFoundException);
   });
 
   it('Return user after update password (error) / update user password', async () => {
@@ -201,6 +235,7 @@ describe('userCQRS handlers test', () => {
     });
 
     expect(test).rejects.toThrow('Your password is invalid');
+    expect(test).rejects.toBeInstanceOf(BadRequestException);
   });
 
   it('Return user after update password (error) / update user password', async () => {
@@ -220,6 +255,7 @@ describe('userCQRS handlers test', () => {
     });
 
     expect(test).rejects.toThrow('Password and new password must be different');
+    expect(test).rejects.toBeInstanceOf(BadRequestException);
   });
 
   it('Return user after update password (error) / update user password', async () => {

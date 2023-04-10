@@ -1,6 +1,7 @@
 import { CommandBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 import {
   CreateCommentHandler,
@@ -62,6 +63,8 @@ describe('commentCQRS handlers test', () => {
     });
 
     expect(test).rejects.toThrow('Unable create new comment');
+    expect(test).rejects.toBeInstanceOf(BadRequestException);
+    expect(test).rejects.not.toBe('');
   });
 
   it('Return comment after create / create comment', async () => {
@@ -88,6 +91,7 @@ describe('commentCQRS handlers test', () => {
     });
 
     expect(test).rejects.toThrow('Comment not found');
+    expect(test).rejects.toBeInstanceOf(NotFoundException);
   });
 
   it('Return true after delete (error) / delete comment', async () => {
@@ -101,6 +105,7 @@ describe('commentCQRS handlers test', () => {
     });
 
     expect(test).rejects.toThrow('You can only delete your comment');
+    expect(test).rejects.toBeInstanceOf(BadRequestException);
   });
 
   it('Return true after delete (error) / delete comment', async () => {
@@ -117,6 +122,7 @@ describe('commentCQRS handlers test', () => {
     });
 
     expect(test).rejects.toThrow('Unable delete post');
+    expect(test).rejects.toBeInstanceOf(BadRequestException);
   });
 
   it('Return true after delete / delete comment', async () => {
@@ -149,6 +155,7 @@ describe('commentCQRS handlers test', () => {
     });
 
     expect(test).rejects.toThrow('Unable get comments');
+    expect(test).rejects.toBeInstanceOf(BadRequestException);
   });
 
   it('Return comments / get comments', async () => {
@@ -176,6 +183,7 @@ describe('commentCQRS handlers test', () => {
     });
 
     expect(test).rejects.toThrow('Comment not found');
+    expect(test).rejects.toBeInstanceOf(NotFoundException);
   });
 
   it('Return comment after update / update comment', async () => {

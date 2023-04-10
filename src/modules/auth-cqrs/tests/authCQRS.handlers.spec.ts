@@ -1,4 +1,9 @@
-import { CacheModule } from '@nestjs/common';
+import {
+  BadRequestException,
+  CacheModule,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -89,6 +94,7 @@ describe('authCQRS handlers test', () => {
       body: { email: 'qwerty@mail.ru', password: '11111' },
     });
     expect(test).rejects.toThrow('User not found');
+    expect(test).rejects.toBeInstanceOf(NotFoundException);
   });
 
   it('Return user after sign-in (error) / sign-in', async () => {
@@ -103,6 +109,7 @@ describe('authCQRS handlers test', () => {
     });
 
     expect(test).rejects.toThrow('Password is invalid');
+    expect(test).rejects.toBeInstanceOf(BadRequestException);
   });
 
   it('Return user after sign-in / sign-in', async () => {
@@ -134,6 +141,7 @@ describe('authCQRS handlers test', () => {
     });
 
     expect(test).rejects.toThrow('User with this email already created');
+    expect(test).rejects.toBeInstanceOf(NotFoundException);
   });
 
   it('Return user after sign-up create/ sign-up create', async () => {
@@ -158,6 +166,7 @@ describe('authCQRS handlers test', () => {
     });
 
     expect(test).rejects.toThrow('Unable create user');
+    expect(test).rejects.toBeInstanceOf(InternalServerErrorException);
   });
 
   it('Return user after sign-up (error) / sign-up', async () => {
@@ -183,6 +192,7 @@ describe('authCQRS handlers test', () => {
     const test = refresh.execute({ token: 'some tokem' });
 
     expect(test).rejects.toThrow('Refresh token is invalid');
+    expect(test).rejects.toBeInstanceOf(BadRequestException);
   });
 
   it('Return tokens after refresh (error) / refresh', async () => {
@@ -193,6 +203,7 @@ describe('authCQRS handlers test', () => {
     const test = refresh.execute({ token: 'token' });
 
     expect(test).rejects.toThrow('User not found');
+    expect(test).rejects.toBeInstanceOf(NotFoundException);
   });
 
   it('Return tokens after refresh / refresh', async () => {
